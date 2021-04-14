@@ -1,0 +1,86 @@
+% !TeX root = ../thuthesis-example.tex
+
+\begin{denotation}[3cm]
+  \item[GDPR] 欧盟于2018年5月25日正式施行的《通用数据保护条例》
+  \item[CCPA] 美国《加州消费者隐私法案（California Consumer Privacy Act）》 
+  \item[PCA] Principal components analysis，主成分分析法
+  \item[SVM] Support Vector Machine，支持向量机
+  \item[CNN] Convolutional Neural Network，卷积神经网络
+  \item[LFW] Labled Faces in the Wild，人脸数据集
+  \item[API] Application Programming Interface，应用程序接口
+  \item[k-means] 一种计算机聚类算法
+  \item[Fine-Tuning] 一种神经网络训练方法，俗称微调
+  \item[ReLU] 神经网络的一种非线性激活函数
+  \item[Sigmoid] 神经网络的一种非线性激活函数
+  \item[Affine] 仿射转换，对向量做空间平移的操作
+  \item[Softmax] 一种数学计算公式，将有限项离散概率分布的梯度对数归一化
+  \item[MNIST] Mixed National Institute of Standards and Technology database，是美国国家标准与技术研究院收集整理的大型手写数字数据库
+  \item[CIFAR-10] 是一个用于识别普适物体的小型数据集，有10个类别，每个类别有6000个图像
+  \item[LEARNING\_RATE] 学习率超参数
+  \item[WEIGHT\_DECAY] 权重衰减超参数
+  \item[MOMENTUM] 训练冲量超参数  
+  \item[BATCH\_SIZE] 每次训练迭代使用的训练数据的个数
+  \item[SGD]   Stochastic gradient descent，随机梯度下降训练方法
+  \item[padding] 卷积运算前的边界填充
+  \item[CPU] Central Processing Unit，中央处理单元
+  \item[SSD] Solid-State Drive，固态驱动器
+  \item[Pytorch] 是一个开源的Python机器学习库
+  \item[Resnet18] 是一个18层的卷积神经网络结构
+  \item[Epoch] 是神经网络训练过程需要用到的名词，1个epoch表示训练过了1遍训练集中的所有样本
+  \item[Loss] 训练神经网络时损失函数的数值
+  \item[$I_{acc}$] 本文指神经网络准确率指标
+  \item[$v_{retain\_acc}$] 本文指使用保留集测得的网络准确率的数值
+  \item[$v_{forget\_acc}$] 本文指使用遗忘集测得的网络准确率的数值
+  \item[遗忘集] 训练数据中标签是遗忘类别的训练集 
+  \item[保留集]  训练数据中标签不是遗忘类别的训练集
+\end{denotation}
+
+
+
+% 也可以使用 nomencl 宏包，需要在导言区
+% \usepackage{nomencl}
+% \makenomenclature
+
+% 在这里输出符号说明
+% \printnomenclature[3cm]
+
+% 在正文中的任意为都可以标题
+% \nomenclature{PI}{聚酰亚胺}
+% \nomenclature{MPI}{聚酰亚胺模型化合物，N-苯基邻苯酰亚胺}
+% \nomenclature{PBI}{聚苯并咪唑}
+% \nomenclature{MPBI}{聚苯并咪唑模型化合物，N-苯基苯并咪唑}
+% \nomenclature{PY}{聚吡咙}
+% \nomenclature{PMDA-BDA}{均苯四酸二酐与联苯四胺合成的聚吡咙薄膜}
+% \nomenclature{MPY}{聚吡咙模型化合物}
+% \nomenclature{As-PPT}{聚苯基不对称三嗪}
+% \nomenclature{MAsPPT}{聚苯基不对称三嗪单模型化合物，3,5,6-三苯基-1,2,4-三嗪}
+% \nomenclature{DMAsPPT}{聚苯基不对称三嗪双模型化合物（水解实验模型化合物）}
+% \nomenclature{S-PPT}{聚苯基对称三嗪}
+% \nomenclature{MSPPT}{聚苯基对称三嗪模型化合物，2,4,6-三苯基-1,3,5-三嗪}
+% \nomenclature{PPQ}{聚苯基喹噁啉}
+% \nomenclature{MPPQ}{聚苯基喹噁啉模型化合物，3,4-二苯基苯并二嗪}
+% \nomenclature{HMPI}{聚酰亚胺模型化合物的质子化产物}
+% \nomenclature{HMPY}{聚吡咙模型化合物的质子化产物}
+% \nomenclature{HMPBI}{聚苯并咪唑模型化合物的质子化产物}
+% \nomenclature{HMAsPPT}{聚苯基不对称三嗪模型化合物的质子化产物}
+% \nomenclature{HMSPPT}{聚苯基对称三嗪模型化合物的质子化产物}
+% \nomenclature{HMPPQ}{聚苯基喹噁啉模型化合物的质子化产物}
+% \nomenclature{PDT}{热分解温度}
+% \nomenclature{HPLC}{高效液相色谱（High Performance Liquid Chromatography）}
+% \nomenclature{HPCE}{高效毛细管电泳色谱（High Performance Capillary lectrophoresis）}
+% \nomenclature{LC-MS}{液相色谱-质谱联用（Liquid chromatography-Mass Spectrum）}
+% \nomenclature{TIC}{总离子浓度（Total Ion Content）}
+% \nomenclature{\textit{ab initio}}{基于第一原理的量子化学计算方法，常称从头算法}
+% \nomenclature{DFT}{密度泛函理论（Density Functional Theory）}
+% \nomenclature{$E_a$}{化学反应的活化能（Activation Energy）}
+% \nomenclature{ZPE}{零点振动能（Zero Vibration Energy）}
+% \nomenclature{PES}{势能面（Potential Energy Surface）}
+% \nomenclature{TS}{过渡态（Transition State）}
+% \nomenclature{TST}{过渡态理论（Transition State Theory）}
+% \nomenclature{$\increment G^\neq$}{活化自由能（Activation Free Energy）}
+% \nomenclature{$\kappa$}{传输系数（Transmission Coefficient）}
+% \nomenclature{IRC}{内禀反应坐标（Intrinsic Reaction Coordinates）}
+% \nomenclature{$\nu_i$}{虚频（Imaginary Frequency）}
+% \nomenclature{ONIOM}{分层算法（Our own N-layered Integrated molecular Orbital and molecular Mechanics）}
+% \nomenclature{SCF}{自洽场（Self-Consistent Field）}
+% \nomenclature{SCRF}{自洽反应场（Self-Consistent Reaction Field）}

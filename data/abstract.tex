@@ -1,0 +1,34 @@
+% !TeX root = ../thuthesis-example.tex
+
+% 中英文摘要和关键字
+
+\begin{abstract}
+  随着隐私保护越来越受到重视，一些利用用户隐私数据学习的机器学习模型需要具有遗忘功能。
+  卷积神经网络被应用到生活的许多方面，可是基于卷积神经网络的遗忘还没有得到足够的重视。
+  本文利用了卷积神经网络的分层抽象特性设计了一套遗忘方法，能够使基于卷积神经网络训练的模型达到足够好的遗忘效果，同时不影响未被遗忘类别的准确率。
+  除此之外，我们还引用了三个评价遗忘效果的指标。
+  我们对方法达到的遗忘效果进行了实验验证，同时与完全重新训练方法进行了对比。
+  实验结果表明，本文提出的方法达到了理想的遗忘效果，并且随着遗忘类别的增加也不会使遗忘效果变坏。
+
+  在文章最后对本文的不足进行了分析，并且对基于卷积神经网络的遗忘方法的发展进行了展望。
+
+  % 关键词用“英文逗号”分隔，输出时会自动处理为正确的分隔符
+  \thusetup{
+    keywords = {隐私保护, 遗忘, 卷积神经网络},
+  }
+\end{abstract}
+
+\begin{abstract*}
+  As privacy protection is paid more and more attention, some machine learning models that use user privacy data for learning need to have forgetting functions.
+  Convolutional neural networks are applied to many aspects of life, but forgetting based on convolutional neural networks has not received enough attention.
+  This paper uses the hierarchical abstract characteristics of the convolutional neural network to design a set of forgetting methods, which can make the model based on the convolutional neural network training achieve a good enough forgetting effect, while not affecting the accuracy of the unforgettable category.
+  In addition, we also cited three indicators to evaluate the effect of forgetting.
+  We experimented to verify the forgetting effect achieved by the method, and compared it with the complete retraining method.
+  The experimental results show that the method proposed in this paper achieves the ideal forgetting effect, and will not make the forgetting effect worse as the forgetting category increases.
+
+  At the end of the article, the deficiencies of this article are analyzed, and the development of forgetting methods based on convolutional neural networks is prospected.
+  % Use comma as seperator when inputting
+  \thusetup{
+    keywords* = {Privacy Preserving, Forgetting, Convolutional Neural Network},
+  }
+\end{abstract*}
