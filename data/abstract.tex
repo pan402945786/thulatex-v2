@@ -3,16 +3,20 @@
 % 中英文摘要和关键字
 
 \begin{abstract}
-  当今以人脸识别、自然语言处理为代表的人工智能技术被广泛应用于社会的各个领域。在人们不断地用数据去训练机器学习模型时，却往往忽略了隐藏在机器学习模型里的个人隐私。
-  相关研究表明，仅通过收集神经网络的输出信息就能还原用于机器学习模型训练的数据信息。这样针对网络模型的攻击也越来越多。随着人们隐私保护意识的不断提高，用户要求机器学习模型具有遗忘功能的要求也势不可挡。
+  当今以人脸识别、自然语言处理为代表的人工智能技术被广泛应用于社会的各个领域。机器学习模型所需要的训练数据往往来自于我们日常的生活当中。
+  在人们不断地用数据去训练机器学习模型时，却往往忽略了隐藏在机器学习模型里的个人隐私。
+  有研究表明，仅通过收集神经网络的输出信息就能还原用于机器学习模型训练的数据信息。随着人们隐私保护意识的不断提高，用户要求机器学习模型具有遗忘功能的要求也随之而来。
+  不仅这样，欧盟等国家为了保护公民的“被遗忘权”，颁布了《通用数据保护条例》，这也推动了机器学习模型遗忘方法的相关研究。
   当我们需要机器学习模型去遗忘数据时，现在的机器学习模型除了对模型完全重新训练之外，尚且没有有效的方法进行高效地遗忘。
-  许多研究者提出了自己的想法，可是现在仍然没有很成熟的遗忘方法，针对卷积神经网络的遗忘方法也是如此。在卷积神经网络被广泛使用的现状下，研究卷积神经网络的遗忘方法十分重要。
-  在本文中，我们受到了迁移学习和共享参数的增量学习的启发，利用卷积神经网络的分层抽象特性设计出了专门针对卷积神经网络进行遗忘的方法。这个方法可以只在训练部分网络参数的情况下达到理想的遗忘效果。
-  我们引用了三个指标用来评价卷积神经网络遗忘之后的效果。
+  许多研究者提出了自己的想法，可是现在仍然没有很成熟的遗忘方法，针对卷积神经网络的遗忘方法也是如此。在卷积神经网络被广泛使用的现状下，研究卷积神经网络的遗忘方法显得十分重要。
+  当今机器学习技术的发展如火如荼，我们受到了迁移学习和共享参数增量学习技术的启发，尝试利用共享参数的方法去解决遗忘的重新训练问题。
+  我们分析了卷积神经网络的设计初衷，发现卷积神经网络与人类视觉信息处理机制十分相似。
+  在本文中，我们利用卷积神经网络的分层抽象特性设计出了专门针对卷积神经网络进行遗忘的方法。这个方法可以只在训练部分网络参数的情况下达到理想的遗忘效果。
+  之后，我们引用了三个指标用来评价卷积神经网络遗忘之后的效果。
   
   为了检验本文遗忘方法的有效性，我们设计了四个实验来进行验证。实验结果表明，本文提出的方法在测试准确率上可以在不损失保留类别准确率的条件下达到理想的遗忘效果。
-  通过与完全重新训练后的网络进行对比，发现两个网络在输出上能够达到足够的相似，而且本文的遗忘方法在收敛时间上与完全重新训练相比具有很大优势。
-  我们还对本文遗忘方法的使用次数进行了实验验证，实验结果表明，本文的遗忘方法可以用于连续性的遗忘操作而不会降低遗忘效果。
+  通过与完全重新训练后的网络进行对比，我们发现两个网络在输出上能够达到足够的相似，而且本文的遗忘方法在收敛时间上与完全重新训练相比具有很大优势。
+  我们还对本文遗忘方法的使用次数进行了实验验证。实验结果表明，本文的遗忘方法可以用于连续性的遗忘操作而不会降低遗忘效果。
 
   % 关键词用“英文逗号”分隔，输出时会自动处理为正确的分隔符
   \thusetup{
@@ -22,22 +26,24 @@
 
 \begin{abstract*}
   Today, artificial intelligence technologies represented by face recognition and natural language processing are widely used in various fields of society. 
+  The training data needed by machine learning models often comes from our daily lives.
   When people continue to use data to train machine learning models, they often ignore the personal privacy hidden in the machine learning models.
-  Related research shows that only by collecting the output information of the neural network, the data information used for machine learning model training can be restored. 
-  In this way, there are more and more attacks on the network model. 
-  With the continuous improvement of people's awareness of privacy protection, users' requirements for machine learning models with forgetting functions are also overwhelming.
+  Studies have shown that only by collecting the output information of the neural network, the data information used for machine learning model training can be restored. 
+  With the continuous improvement of people's awareness of privacy protection, users' requirements for machine learning models with forgetting functions also follow.
+  Not only that, in order to protect citizens' "right to be forgotten", countries such as the European Union have promulgated the General Data Protection Regulation, 
+  which has also promoted related research on the forgetting method of machine learning models.
   When we need a machine learning model to forget data, the current machine learning model does not yet have an effective method to efficiently forget except for completely retraining the model.
   Many researchers have put forward their own ideas, but there is still no mature forgetting method, and the same is true for forgetting methods for convolutional neural networks. 
   In the current situation that convolutional neural networks are widely used, it is very important to study the forgetting methods of convolutional neural networks.
-  In this article, we are inspired by transfer learning and incremental learning of shared parameters, 
-  and use the hierarchical abstract characteristics of convolutional neural networks to design a method for forgetting specifically for convolutional neural networks. 
+  Today, the development of machine learning technology is in full swing. We are inspired by transfer learning and shared parameter incremental learning technology, and try to use the shared parameter method to solve the forgotten retraining problem.  
+  We analyzed the original intention of the convolutional neural network and found that the convolutional neural network is very similar to the human visual information processing mechanism.
+  In this article, we use the hierarchical abstract characteristics of the convolutional neural network to design a method for forgetting specifically for the convolutional neural network. 
   This method can achieve the ideal forgetting effect when only part of the network parameters are trained.
-  We quoted three indicators to evaluate the effect of the convolutional neural network after forgetting.
-  
+  After that, we quoted three indicators to evaluate the effect of the convolutional neural network after forgetting.
   In order to test the effectiveness of the forgetting method in this paper, we designed four experiments to verify it. 
   The experimental results show that the method proposed in this paper can achieve the ideal forgetting effect without losing the accuracy of the retention category in terms of test accuracy.
-  By comparing with the completely retrained network, 
-  it is found that the output of the two networks can achieve sufficient similarity, and the forgetting method in this paper has a great advantage over the complete retraining in terms of convergence time.
+  By comparing with the completely retrained network, it is found that the output of the two networks can achieve sufficient similarity, 
+  and the forgetting method in this paper has a great advantage over the complete retraining in terms of convergence time.
   We have also conducted experiments to verify the use times of the forgetting method in this paper. 
   The experimental results show that the forgetting method in this paper can be used for continuous forgetting operations without reducing the forgetting effect.
 
