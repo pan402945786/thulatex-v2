@@ -198,7 +198,7 @@ archivePrefix = {arXiv},
   title      = {数据保护系列：《加州消费者隐私法案》及其启示},
   year       = {2020},
   date       = {2020-02-27},
-  urldate    = {2020-02-27},
+  urldate    = {2021-04-15},
   url        = {https://www.mondaq.com/china/privacy/898314/25968254542044525252319952101565306122982115224030280403615332773385443116927861266961229921450208542155131034},
   key        = {xiao1 yu4},
 }
@@ -225,7 +225,7 @@ archivePrefix = {arXiv},
   title      = {California Consumer Privacy Act (CCPA)},
   year       = {2020},
   date       = {2020-08-27},
-  urldate    = {2020-08-27},
+  urldate    = {2021-04-15},
   url        = {https://oag.ca.gov/privacy/ccpa},
   key        = {xiao1 yu4},
 }
@@ -235,7 +235,7 @@ archivePrefix = {arXiv},
   title      = {General Data Protection Regulation (GDPR)},
   year       = {2018},
   date       = {2018-05-25},
-  urldate    = {2018-05-25},
+  urldate    = {2021-04-15},
   url        = {https://gdpr-info.eu/},
   key        = {xiao1 yu4},
 }
@@ -265,7 +265,7 @@ archivePrefix = {arXiv},
   address    = {北京},
   publisher  = {人民邮电出版社},
   year       = {2018},
-  pages      = {216},
+  pages      = {202-216},
   key        = {lu4 yu3 jie2},
 }
 
@@ -350,7 +350,7 @@ year = {2016}
   title      = {眼见怎样为实？},
   year       = {2017},
   date       = {2017-10-08},
-  urldate    = {2017-10-08},
+  urldate    = {2021-04-15},
   url        = {https://zhuanlan.zhihu.com/p/29853731},
   key        = {zhang1 xiao3 king},
 }
@@ -360,10 +360,464 @@ year = {2016}
   title      = {目标定位和检测系列（1）：一些基本概念},
   year       = {2018},
   date       = {2018-01-23},
-  urldate    = {2018-01-23},
+  urldate    = {2021-04-15},
   url        = {https://blog.csdn.net/sinat_34474705/article/details/79131542},
   key        = {Meringue zz},
 }
+
+@InProceedings{10.1007/978-3-319-40159-1_19,
+author="D'Amato, Anthony and Boussard, Matthieu",
+editor="de la Prieta, Fernando
+and Escalona, Mar{\'i}a J.
+and Corchuelo, Rafael
+and Mathieu, Philippe
+and Vale, Zita
+and Campbell, Andrew T.
+and Rossi, Silvia
+and Adam, Emmanuel
+and Jim{\'e}nez-L{\'o}pez, Mar{\'i}a D.
+and Navarro, Elena M.
+and Moreno, Mar{\'i}a N.",
+title="Forgetting Methods for White Box Learning",
+booktitle="Trends in Practical Applications of Scalable Multi-Agent Systems, the PAAMS Collection",
+year="2016",
+publisher="Springer International Publishing",
+address="Cham",
+pages="225--236",
+abstract="In the Internet of Things (IoT) domain, being able to propose a contextualized and personalized user experience is a major issue. The explosion of connected objects makes it possible to gather more and more information about users and therefore create new, more innovative services that are truly adapted to users. To attain these goals, and meet the user expectations, applications must learn from user behavior and continuously adapt this learning accordingly. To achieve this, we propose a solution that provides a simple way to inject this kind of behavior into IoT applications by pairing a learning algorithm (C4.5) with Behavior Trees. In this context, this paper presents new forgetting methods for the C4.5 algorithm in order to continuously adapt the learning.",
+isbn="978-3-319-40159-1"
+}
+
+@InProceedings{pmlr-v130-izzo21a,
+  title = 	 { Approximate Data Deletion from Machine Learning Models },
+  author =       {Izzo, Zachary and Anne Smart, Mary and Chaudhuri, Kamalika and Zou, James},
+  booktitle = 	 {Proceedings of The 24th International Conference on Artificial Intelligence and Statistics},
+  pages = 	 {2008--2016},
+  year = 	 {2021},
+  editor = 	 {Banerjee, Arindam and Fukumizu, Kenji},
+  volume = 	 {130},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {13--15 Apr},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v130/izzo21a/izzo21a.pdf},
+  url = 	 {http://proceedings.mlr.press/v130/izzo21a.html},
+  abstract = 	 { Deleting data from a trained machine learning (ML) model is a critical task in many applications. For example, we may want to remove the influence of training points that might be out of date or outliers. Regulations such as EU’s General Data Protection Regulation also stipulate that individuals can request to have their data deleted. The naive approach to data deletion is to retrain the ML model on the remaining data, but this is too time consuming. In this work, we propose a new approximate deletion method for linear and logistic models whose computational cost is linear in the the feature dimension d and independent of the number of training data n. This is a significant gain over all existing methods, which all have superlinear time dependence on the dimension. We also develop a new feature-injection test to evaluate the thoroughness of data deletion from ML models. }
+}
+
+@InProceedings{pmlr-v119-wu20b, 
+  title = {{D}elta{G}rad: Rapid retraining of machine learning models}, 
+  author = {Wu, Yinjun and Dobriban, Edgar and Davidson, Susan}, 
+  booktitle = {Proceedings of the 37th International Conference on Machine Learning}, 
+  pages = {10355--10366},
+  year = {2020}, 
+  editor = {Hal Daumé III and Aarti Singh}, 
+  volume = {119}, 
+  series = {Proceedings of Machine Learning Research}, 
+  month = {13--18 Jul}, 
+  publisher = {PMLR}, 
+  pdf = {http://proceedings.mlr.press/v119/wu20b/wu20b.pdf}, 
+  url = { http://proceedings.mlr.press/v119/wu20b.html }, 
+  abstract = {Machine learning models are not static and may need to be retrained on slightly changed datasets, for instance, with the addition or deletion of a set of data points. This has many applications, including privacy, robustness, bias reduction, and uncertainty quantifcation. However, it is expensive to retrain models from scratch. To address this problem, we propose the DeltaGrad algorithm for rapid retraining machine learning models based on information cached during the training phase. We provide both theoretical and empirical support for the effectiveness of DeltaGrad, and show that it compares favorably to the state of the art.} 
+}
+
+@InProceedings{pmlr-v132-neel21a, 
+  title = {Descent-to-Delete: Gradient-Based Methods for Machine Unlearning}, 
+  author = {Neel, Seth and Roth, Aaron and Sharifi-Malvajerdi, Saeed}, 
+  booktitle = {Proceedings of the 32nd International Conference on Algorithmic Learning Theory}, 
+  pages = {931--962}, 
+  year = {2021}, 
+  editor = {Vitaly Feldman and Katrina Ligett and Sivan Sabato},
+  volume = {132}, 
+  series = {Proceedings of Machine Learning Research}, 
+  month = {16--19 Mar}, 
+  publisher = {PMLR}, 
+  pdf = {http://proceedings.mlr.press/v132/neel21a/neel21a.pdf}, 
+  url = { http://proceedings.mlr.press/v132/neel21a.html }, 
+  abstract = {We study the data deletion problem for convex models. By leveraging techniques from convex optimization and reservoir sampling, we give the first data deletion algorithms that are able to handle an arbitrarily long sequence of adversarial updates while promising both per-deletion run-time and steady-state error that do not grow with the length of the update sequence. We also introduce several new conceptual distinctions: for example, we can ask that after a deletion, the entire state maintained by the optimization algorithm is statistically indistinguishable from the state that would have resulted had we retrained, or we can ask for the weaker condition that only the observable output is statistically indistinguishable from the observable output that would have resulted from retraining. We are able to give more efficient deletion algorithms under this weaker deletion criterion.} 
+}
+
+@inproceedings{10.1145/3196494.3196517,
+  author = {Cao, Yinzhi and Yu, Alexander Fangxiao and Aday, Andrew and Stahl, Eric and Merwine, Jon and Yang, Junfeng},
+  title = {Efficient Repair of Polluted Machine Learning Systems via Causal Unlearning},
+  year = {2018},
+  isbn = {9781450355766},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3196494.3196517},
+  doi = {10.1145/3196494.3196517},
+  abstract = {Machine learning systems, though being successful in many real-world applications, are known to remain prone to errors and attacks. A major attack, called data pollution, injects maliciously crafted training data samples into the training set, causing the system to learn an incorrect model and subsequently misclassify testing samples. A natural solution to a data pollution attack is to remove the polluted data from the training set and relearn a clean model. Unfortunately, the training set of a real-world machine learning system can contain millions of samples; it is thus hopeless for an administrator to manually inspect all of them to weed out the polluted ones.This paper presents an approach called causal unlearning and a corresponding system called KARMA to efficiently repair a polluted learning system. KARMA dramatically reduces the manual effort of administrators by automatically detecting the set of polluted training data samples with high precision and recall. Evaluation on three learning systems show that KARMA greatly reduces manual effort for repair, and has high precision and recall.},
+  booktitle = {Proceedings of the 2018 on Asia Conference on Computer and Communications Security},
+  pages = {735–747},
+  numpages = {13},
+  keywords = {data pollution attacks, machine unlearning, causality},
+  location = {Incheon, Republic of Korea},
+  series = {ASIACCS '18}
+}
+
+@InProceedings{10.1007/978-3-030-58526-6_23,
+  author="Golatkar, Aditya
+  and Achille, Alessandro
+  and Soatto, Stefano",
+  editor="Vedaldi, Andrea
+  and Bischof, Horst
+  and Brox, Thomas
+  and Frahm, Jan-Michael",
+  title="Forgetting Outside the Box: Scrubbing Deep Networks of Information Accessible from Input-Output Observations",
+  booktitle="Computer Vision -- ECCV 2020",
+  year="2020",
+  publisher="Springer International Publishing",
+  address="Cham",
+  pages="383--398",
+  abstract="We describe a procedure for removing dependency on a cohort of training data from a trained deep network that improves upon and generalizes previous methods to different readout functions, and can be extended to ensure forgetting in the final activations of the network. We introduce a new bound on how much information can be extracted per query about the forgotten cohort from a black-box network for which only the input-output behavior is observed. The proposed forgetting procedure has a deterministic part derived from the differential equations of a linearized version of the model, and a stochastic part that ensures information destruction by adding noise tailored to the geometry of the loss landscape. We exploit the connections between the final activations and weight dynamics of a DNN inspired by Neural Tangent Kernels to compute the information in the final activations.",
+  isbn="978-3-030-58526-6"
+}
+
+@inproceedings{10.1145/3319535.3363226,
+  author = {Du, Min and Chen, Zhi and Liu, Chang and Oak, Rajvardhan and Song, Dawn},
+  title = {Lifelong Anomaly Detection Through Unlearning},
+  year = {2019},
+  isbn = {9781450367479},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3319535.3363226},
+  doi = {10.1145/3319535.3363226},
+  abstract = {Anomaly detection is essential towards ensuring system security and reliability. Powered by constantly generated system data, deep learning has been found both effective and flexible to use, with its ability to extract patterns without much domain knowledge. Existing anomaly detection research focuses on a scenario referred to as zero-positive, which means that the detection model is only trained for normal (i.e., negative) data. In a real application scenario, there may be additional manually inspected positive data provided after the system is deployed. We refer to this scenario as lifelong anomaly detection. However, we find that existing approaches are not easy to adopt such new knowledge to improve system performance. In this work, we are the first to explore the lifelong anomaly detection problem, and propose novel approaches to handle corresponding challenges. In particular, we propose a framework called unlearning, which can effectively correct the model when a false negative (or a false positive) is labeled. To this aim, we develop several novel techniques to tackle two challenges referred to as exploding loss and catastrophic forgetting. In addition, we abstract a theoretical framework based on generative models. Under this framework, our unlearning approach can be presented in a generic way to be applied to most zero-positive deep learning-based anomaly detection algorithms to turn them into corresponding lifelong anomaly detection solutions. We evaluate our approach using two state-of-the-art zero-positive deep learning anomaly detection architectures and three real-world tasks. The results show that the proposed approach is able to significantly reduce the number of false positives and false negatives through unlearning.},
+  booktitle = {Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security},
+  pages = {1283–1297},
+  numpages = {15},
+  keywords = {unlearning, anomaly detection, online learning},
+  location = {London, United Kingdom},
+  series = {CCS '19}
+}
+
+@ARTICLE{2020arXiv200202730B,
+       author = {{Baumhauer}, Thomas and {Sch{\"o}ttle}, Pascal and {Zeppelzauer}, Matthias},
+        title = "{Machine Unlearning: Linear Filtration for Logit-based Classifiers}",
+      journal = {arXiv e-prints},
+     keywords = {Computer Science - Machine Learning, Statistics - Machine Learning},
+         year = 2020,
+        month = feb,
+          eid = {arXiv:2002.02730},
+        pages = {arXiv:2002.02730},
+archivePrefix = {arXiv},
+       eprint = {2002.02730},
+ primaryClass = {cs.LG},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2020arXiv200202730B},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+@ARTICLE{2020arXiv200304247S,
+       author = {{Sommer}, David Marco and {Song}, Liwei and {Wagh}, Sameer and {Mittal}, Prateek},
+        title = "{Towards Probabilistic Verification of Machine Unlearning}",
+      journal = {arXiv e-prints},
+     keywords = {Computer Science - Cryptography and Security, Computer Science - Machine Learning, Statistics - Machine Learning},
+         year = 2020,
+        month = mar,
+          eid = {arXiv:2003.04247},
+        pages = {arXiv:2003.04247},
+archivePrefix = {arXiv},
+       eprint = {2003.04247},
+ primaryClass = {cs.CR},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2020arXiv200304247S},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+@InProceedings{pmlr-v119-guo20c, 
+title = {Certified Data Removal from Machine Learning Models}, 
+author = {Guo, Chuan and Goldstein, Tom and Hannun, Awni and Van Der Maaten, Laurens}, 
+booktitle = {Proceedings of the 37th International Conference on Machine Learning}, 
+pages = {3832--3842}, 
+year = {2020}, 
+editor = {Hal Daumé III and Aarti Singh}, 
+volume = {119}, 
+series = {Proceedings of Machine Learning Research}, 
+month = {13--18 Jul}, 
+publisher = {PMLR}, 
+pdf = {http://proceedings.mlr.press/v119/guo20c/guo20c.pdf}, 
+url = { http://proceedings.mlr.press/v119/guo20c.html },
+abstract = {Good data stewardship requires removal of data at the request of the data’s owner. This raises the question if and how a trained machine-learning model, which implicitly stores information about its training data, should be affected by such a removal request. Is it possible to “remove” data from a machine-learning model? We study this problem by defining certified removal: a very strong theoretical guarantee that a model from which data is removed cannot be distinguished from a model that never observed the data to begin with. We develop a certified-removal mechanism for linear classifiers and empirically study learning settings in which this mechanism is practical.} 
+}
+
+@article{10.1145/293347.293351,
+author = {Kearns, Michael},
+title = {Efficient Noise-Tolerant Learning from Statistical Queries},
+year = {1998},
+issue_date = {Nov. 1998},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {45},
+number = {6},
+issn = {0004-5411},
+url = {https://doi.org/10.1145/293347.293351},
+doi = {10.1145/293347.293351},
+abstract = {In this paper, we study the problem of learning in the presence of classification noise in the probabilistic learning model of Valiant and its variants. In order to identify the class of “robust” learning algorithms in the most general way, we formalize a new but related model of learning from statistical queries. Intuitively, in this model a learning algorithm is forbidden to examine individual examples of the unknown target function, but is given acess to an oracle providing estimates of probabilities over the sample space of random examples.One of our main results shows that any class of functions learnable from statistical queries is in fact learnable with classification noise in Valiant's model, with a noise rate approaching the information-theoretic barrier of 1/2. We then demonstrate the generality of the statistical query model, showing that practically every class learnable in Valiant's model and its variants can also be learned in the new model (and thus can be learned in the presence of noise). A notable exception to this statement is the class of parity functions, which we prove is not learnable from statistical queries, and for which no noise-tolerant algorithm is known.},
+journal = {J. ACM},
+month = nov,
+pages = {983–1006},
+numpages = {24},
+keywords = {computational learning theory, machine learning}
+}
+
+@InProceedings{pmlr-v70-koh17a, 
+title = {Understanding Black-box Predictions via Influence Functions}, 
+author = {Pang Wei Koh and Percy Liang}, 
+booktitle = {Proceedings of the 34th International Conference on Machine Learning}, pages = {1885--1894},
+year = {2017}, editor = {Precup, Doina and Teh, Yee Whye}, 
+volume = {70}, series = {Proceedings of Machine Learning Research}, 
+month = {06--11 Aug}, publisher = {PMLR}, 
+pdf = {http://proceedings.mlr.press/v70/koh17a/koh17a.pdf}, 
+url = { http://proceedings.mlr.press/v70/koh17a.html }, 
+abstract = {How can we explain the predictions of a black-box model? In this paper, we use influence functions — a classic technique from robust statistics — to trace a model’s prediction through the learning algorithm and back to its training data, thereby identifying training points most responsible for a given prediction. To scale up influence functions to modern machine learning settings, we develop a simple, efficient implementation that requires only oracle access to gradients and Hessian-vector products. We show that even on non-convex and non-differentiable models where the theory breaks down, approximations to influence functions can still provide valuable information. On linear models and convolutional neural networks, we demonstrate that influence functions are useful for multiple purposes: understanding model behavior, debugging models, detecting dataset errors, and even creating visually-indistinguishable training-set attacks.} 
+}
+
+@book{cook_weisberg_1982,
+  author     = {Cook, R. Dennis and Weisberg, Sanford},
+  title      = {Residuals and Influence in Regression},
+  address    = {New York},
+  publisher  = {Chapman and Hall},
+  year       = {1982},
+  pages      = {112},
+  key        = {cook weisberg},
+}
+
+@inproceedings{10.5555/2671225.2671227,
+author = {Fredrikson, Matthew and Lantz, Eric and Jha, Somesh and Lin, Simon and Page, David and Ristenpart, Thomas},
+title = {Privacy in Pharmacogenetics: An End-to-End Case Study of Personalized Warfarin Dosing},
+year = {2014},
+isbn = {9781931971157},
+publisher = {USENIX Association},
+address = {USA},
+abstract = {We initiate the study of privacy in pharmacogenetics, wherein machine learning models are used to guide medical treatments based on a patient's genotype and background. Performing an in-depth case study on privacy in personalized warfarin dosing, we show that suggested models carry privacy risks, in particular because attackers can perform what we call model inversion: an attacker, given the model and some demographic information about a patient, can predict the patient's genetic markers.As differential privacy (DP) is an oft-proposed solution for medical settings such as this, we evaluate its effectiveness for building private versions of pharmacogenetic models. We show that DP mechanisms prevent our model inversion attacks when the privacy budget is carefully selected. We go on to analyze the impact on utility by performing simulated clinical trials with DP dosing models. We find that for privacy budgets effective at preventing attacks, patients would be exposed to increased risk of stroke, bleeding events, and mortality. We conclude that current DP mechanisms do not simultaneously improve genomic privacy while retaining desirable clinical efficacy, highlighting the need for new mechanisms that should be evaluated in situ using the general methodology introduced by our work.},
+booktitle = {Proceedings of the 23rd USENIX Conference on Security Symposium},
+pages = {17–32},
+numpages = {16},
+location = {San Diego, CA},
+series = {SEC'14}
+}
+
+@inproceedings{10.1145/2810103.2813677,
+author = {Fredrikson, Matt and Jha, Somesh and Ristenpart, Thomas},
+title = {Model Inversion Attacks That Exploit Confidence Information and Basic Countermeasures},
+year = {2015},
+isbn = {9781450338325},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2810103.2813677},
+doi = {10.1145/2810103.2813677},
+abstract = {Machine-learning (ML) algorithms are increasingly utilized in privacy-sensitive applications such as predicting lifestyle choices, making medical diagnoses, and facial recognition. In a model inversion attack, recently introduced in a case study of linear classifiers in personalized medicine by Fredrikson et al., adversarial access to an ML model is abused to learn sensitive genomic information about individuals. Whether model inversion attacks apply to settings outside theirs, however, is unknown. We develop a new class of model inversion attack that exploits confidence values revealed along with predictions. Our new attacks are applicable in a variety of settings, and we explore two in depth: decision trees for lifestyle surveys as used on machine-learning-as-a-service systems and neural networks for facial recognition. In both cases confidence values are revealed to those with the ability to make prediction queries to models. We experimentally show attacks that are able to estimate whether a respondent in a lifestyle survey admitted to cheating on their significant other and, in the other context, show how to recover recognizable images of people's faces given only their name and access to the ML model. We also initiate experimental exploration of natural countermeasures, investigating a privacy-aware decision tree training algorithm that is a simple variant of CART learning, as well as revealing only rounded confidence values. The lesson that emerges is that one can avoid these kinds of MI attacks with negligible degradation to utility.},
+booktitle = {Proceedings of the 22nd ACM SIGSAC Conference on Computer and Communications Security},
+pages = {1322–1333},
+numpages = {12},
+keywords = {machine learning, attacks, privacy},
+location = {Denver, Colorado, USA},
+series = {CCS '15}
+}
+
+@inproceedings{10.5555/3241094.3241142,
+author = {Tram\`{e}r, Florian and Zhang, Fan and Juels, Ari and Reiter, Michael K. and Ristenpart, Thomas},
+title = {Stealing Machine Learning Models via Prediction APIs},
+year = {2016},
+isbn = {9781931971324},
+publisher = {USENIX Association},
+address = {USA},
+abstract = {Machine learning (ML) models may be deemed confidential due to their sensitive training data, commercial value, or use in security applications. Increasingly often, confidential ML models are being deployed with publicly accessible query interfaces. ML-as-a-service ("predictive analytics") systems are an example: Some allow users to train models on potentially sensitive data and charge others for access on a pay-per-query basis.The tension between model confidentiality and public access motivates our investigation of model extraction attacks. In such attacks, an adversary with black-box access, but no prior knowledge of an ML model's parameters or training data, aims to duplicate the functionality of (i.e., "steal") the model. Unlike in classical learning theory settings, ML-as-a-service offerings may accept partial feature vectors as inputs and include confidence values with predictions. Given these practices, we show simple, efficient attacks that extract target ML models with near-perfect fidelity for popular model classes including logistic regression, neural networks, and decision trees. We demonstrate these attacks against the online services of BigML and Amazon Machine Learning. We further show that the natural countermeasure of omitting confidence values from model outputs still admits potentially harmful model extraction attacks. Our results highlight the need for careful ML model deployment and new model extraction countermeasures.},
+booktitle = {Proceedings of the 25th USENIX Conference on Security Symposium},
+pages = {601–618},
+numpages = {18},
+location = {Austin, TX, USA},
+series = {SEC'16}
+}
+
+@INPROCEEDINGS{7958568,
+  author={R. {Shokri} and M. {Stronati} and C. {Song} and V. {Shmatikov}},
+  booktitle={2017 IEEE Symposium on Security and Privacy (SP)}, 
+  title={Membership Inference Attacks Against Machine Learning Models}, 
+  year={2017},
+  volume={},
+  number={},
+  pages={3-18},
+  doi={10.1109/SP.2017.41}
+  }
+
+  @ARTICLE{8634878,
+  author={S. {Truex} and L. {Liu} and M. E. {Gursoy} and L. {Yu} and W. {Wei}},
+  journal={IEEE Transactions on Services Computing}, 
+  title={Demystifying Membership Inference Attacks in Machine Learning as a Service}, 
+  year={2019},
+  volume={},
+  number={},
+  pages={1-1},
+  doi={10.1109/TSC.2019.2897554}}
+
+@inproceedings{10.1145/3243734.3243855,
+author = {Nasr, Milad and Shokri, Reza and Houmansadr, Amir},
+title = {Machine Learning with Membership Privacy Using Adversarial Regularization},
+year = {2018},
+isbn = {9781450356930},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3243734.3243855},
+doi = {10.1145/3243734.3243855},
+abstract = {Machine learning models leak significant amount of information about their training sets, through their predictions. This is a serious privacy concern for the users of machine learning as a service. To address this concern, in this paper, we focus on mitigating the risks of black-box inference attacks against machine learning models. We introduce a mechanism to train models with membership privacy, which ensures indistinguishability between the predictions of a model on its training data and other data points (from the same distribution). This requires minimizing the accuracy of the best black-box membership inference attack against the model. We formalize this as a min-max game, and design an adversarial training algorithm that minimizes the prediction loss of the model as well as the maximum gain of the inference attacks. This strategy, which can guarantee membership privacy (as prediction indistinguishability), acts also as a strong regularizer and helps generalizing the model. We evaluate the practical feasibility of our privacy mechanism on training deep neural networks using benchmark datasets. We show that the min-max strategy can mitigate the risks of membership inference attacks (near random guess), and can achieve this with a negligible drop in the model's prediction accuracy (less than 4%).},
+booktitle = {Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security},
+pages = {634–646},
+numpages = {13},
+keywords = {data privacy, adversarial process, membership privacy, min-max game, machine learning, inference attacks, indistinguishability},
+location = {Toronto, Canada},
+series = {CCS '18}
+}
+
+@ARTICLE{2018arXiv180601246S,
+       author = {{Salem}, Ahmed and {Zhang}, Yang and {Humbert}, Mathias and {Berrang}, Pascal and {Fritz}, Mario and {Backes}, Michael},
+        title = "{ML-Leaks: Model and Data Independent Membership Inference Attacks and Defenses on Machine Learning Models}",
+      journal = {arXiv e-prints},
+     keywords = {Computer Science - Cryptography and Security, Computer Science - Artificial Intelligence, Computer Science - Machine Learning},
+         year = 2018,
+        month = jun,
+          eid = {arXiv:1806.01246},
+        pages = {arXiv:1806.01246},
+archivePrefix = {arXiv},
+       eprint = {1806.01246},
+ primaryClass = {cs.CR},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2018arXiv180601246S},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+@ARTICLE{visser2017,
+  author={Visser, M},
+  journal={The Learning Organization}, 
+  title={Learning and unlearning: a conceptual note}, 
+  year={2017},
+  volume={24},
+  number={1},
+  pages={49-57},
+  doi={10.1108/TLO-10-2016-0070}
+}
+
+@ARTICLE{jishouling2021,
+  author={纪守领 and 杜天宇 and 李进锋 and others},
+  journal={软件学报}, 
+  title={机器学习模型安全与隐私研究综述}, 
+  year={2021},
+  volume={32},
+  number={1},
+  pages={41-67},
+  doi={10.13328/j.cnki.jos.006131},
+}
+
+@InProceedings{10.1007/978-3-030-21752-5_4,
+author="Gutmann, Andreas
+and Warner, Mark",
+editor="Naldi, Maurizio
+and Italiano, Giuseppe F.
+and Rannenberg, Kai
+and Medina, Manel
+and Bourka, Athena",
+title="Fight to Be Forgotten: Exploring the Efficacy of Data Erasure in Popular Operating Systems",
+booktitle="Privacy Technologies and Policy",
+year="2019",
+publisher="Springer International Publishing",
+address="Cham",
+pages="45--58",
+abstract="A long history of longitudinal and intercultural research has identified decommissioned storage devices (e.g., USB memory sticks) as a serious privacy and security threat. Sensitive data deleted by previous owners have repeatedly been found on second-hand USB sticks through forensic analysis. Such data breaches are unlikely to occur when data is securely erased, rather than being deleted. Yet, research shows people confusing these two terms. In this paper, we report on an investigation of possible causes for this confusion. We analysed the user interface of two popular operating systems and found: (1) inconsistencies in the language used around delete and erase functions, (2) insecure default options, and (3) unclear or incomprehensible information around delete and erase functions. We discuss how this could result in data controllers becoming non-compliant with a legal obligation for erasure, putting data subjects at risk of accidental data breaches from the decommissioning of storage devices. Finally, we propose improvements to the design of relevant user interface elements and the development of official guidelines for best practice on GDPR compatible data erasure procedures.",
+isbn="978-3-030-21752-5"
+}
+
+@inproceedings{Kwak2017LetMU,
+  title={Let Machines Unlearn - Machine Unlearning and the Right to be Forgotten},
+  author={Chanhee Kwak and Junyeong Lee and Kyuhong Park and H. Lee},
+  booktitle={AMCIS},
+  year={2017}
+}
+
+@online{Francesco2018,
+  author     = {Francesco, Corea},
+  title      = {Machine Learning: what you are too afraid to ask},
+  year       = {2018},
+  date       = {2018-03-06},
+  urldate    = {2021-04-15},
+  url        = {https://datascience.foundation/sciencewhitepaper/machine-learning-what-you-are-too-afraid-to-ask},
+}
+
+@online{marketsmarkets2019,
+  author     = {MarketsandMarkets},
+  title      = {Facial Recognition Market by Component},
+  year       = {2019},
+  date       = {2019-10-09},
+  urldate    = {2021-04-15},
+  url        = {https://www.marketsandmarkets.com/Market-Reports/facial-recognition-market-995.html},
+}
+
+@article{VILLARONGA2018304,
+title = {Humans forget, machines remember: Artificial intelligence and the Right to Be Forgotten},
+journal = {Computer Law and Security Review},
+volume = {34},
+number = {2},
+pages = {304-313},
+year = {2018},
+issn = {0267-3649},
+doi = {https://doi.org/10.1016/j.clsr.2017.08.007},
+url = {https://www.sciencedirect.com/science/article/pii/S0267364917302091},
+author = {Eduard Fosch Villaronga and Peter Kieseberg and Tiffany Li},
+keywords = {Right to Be Forgotten, Artificial intelligence (AI), Privacy, Data deletion, Memory},
+abstract = {This article examines the problem of AI memory and the Right to Be Forgotten. First, this article analyzes the legal background behind the Right to Be Forgotten, in order to understand its potential applicability to AI, including a discussion on the antagonism between the values of privacy and transparency under current E.U. privacy law. Next, the authors explore whether the Right to Be Forgotten is practicable or beneficial in an AI/machine learning context, in order to understand whether and how the law should address the Right to Be Forgotten in a post-AI world. The authors discuss the technical problems faced when adhering to strict interpretation of data deletion requirements under the Right to Be Forgotten, ultimately concluding that it may be impossible to fulfill the legal aims of the Right to Be Forgotten in artificial intelligence environments. Finally, this article addresses the core issue at the heart of the AI and Right to Be Forgotten problem: the unfortunate dearth of interdisciplinary scholarship supporting privacy law and regulation.},
+}
+
+@inproceedings{sarkar:hal-01824058,
+  TITLE = {{Towards Enforcement of the EU GDPR: Enabling Data Erasure}},
+  AUTHOR = {Sarkar, Subhadeep and Ban{\^a}tre, Jean-Pierre and Rilling, Louis and Morin, Christine},
+  URL = {https://hal.inria.fr/hal-01824058},
+  BOOKTITLE = {{iThings 2018 - 11th IEEE International Conference of Internet of Things}},
+  ADDRESS = {Halifax, Canada},
+  PAGES = {1-8},
+  YEAR = {2018},
+  MONTH = Jul,
+  KEYWORDS = {Personal data privacy ; EU GDPR ; Internet of Things (IoT) ; Data erasure},
+  PDF = {https://hal.inria.fr/hal-01824058/file/position_paper.pdf},
+  HAL_ID = {hal-01824058},
+  HAL_VERSION = {v1},
+}
+
+@online{caipeiru2019,
+  author     = {蔡培如},
+  title      = {被遗忘权制度的反思与再建构},
+  year       = {2019},
+  date       = {2019-10-09},
+  urldate    = {2021-04-15},
+  url        = {http://www.calaw.cn/article/default.asp?id=13355},
+}
+
+@article{GUO2019102805,
+title = {A survey on deep learning based face recognition},
+journal = {Computer Vision and Image Understanding},
+volume = {189},
+pages = {102805},
+year = {2019},
+issn = {1077-3142},
+doi = {https://doi.org/10.1016/j.cviu.2019.102805},
+url = {https://www.sciencedirect.com/science/article/pii/S1077314219301183},
+author = {Guodong Guo and Na Zhang},
+keywords = {Deep learning, Face recognition, Artificial Neural Network, Convolutional Neural Networks, Autoencoder, Generative Adversarial Networks},
+abstract = {Deep learning, in particular the deep convolutional neural networks, has received increasing interests in face recognition recently, and a number of deep learning methods have been proposed. This paper summarizes about 330 contributions in this area. It reviews major deep learning concepts pertinent to face image analysis and face recognition, and provides a concise overview of studies on specific face recognition problems, such as handling variations in pose, age, illumination, expression, and heterogeneous face matching. A summary of databases used for deep face recognition is given as well. Finally, some open challenges and directions are discussed for future research.}
+}
+
+@inproceedings{deepface2014,
+author = {Taigman, Yaniv and Yang, Ming and Ranzato, Marc'Aurelio and Wolf, Lior},
+year = {2014},
+month = {09},
+pages = {},
+title = {DeepFace: Closing the Gap to Human-Level Performance in Face Verification},
+journal = {Proceedings of the IEEE Computer Society Conference on Computer Vision and Pattern Recognition},
+doi = {10.1109/CVPR.2014.220}
+}
+
+
+
+
+
+
+
+
 
 
 
