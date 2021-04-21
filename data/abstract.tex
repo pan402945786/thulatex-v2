@@ -10,13 +10,13 @@
   当我们需要机器学习模型去遗忘数据时，现在的机器学习模型除了对模型完全重新训练之外，尚且没有有效的方法进行高效地遗忘。
   许多研究者提出了自己的想法，可是现在仍然没有很成熟的遗忘方法，针对卷积神经网络的遗忘方法也是如此。在卷积神经网络被广泛使用的现状下，研究卷积神经网络的遗忘方法显得十分重要。
   当今机器学习技术的发展如火如荼，我们受到了迁移学习和共享参数增量学习技术的启发，尝试利用共享参数的方法去解决遗忘的重新训练问题。
-  我们分析了卷积神经网络的设计初衷，发现卷积神经网络与人类视觉信息处理机制十分相似。
+  我们分析了卷积神经网络的设计初衷，发现卷积神经网络与生物视觉信息处理机制十分相似。
   在本文中，我们利用卷积神经网络的分层抽象特性设计出了专门针对卷积神经网络进行遗忘的方法。这个方法可以只在训练部分网络参数的情况下达到理想的遗忘效果。
   之后，我们引用了三个指标用来评价卷积神经网络遗忘之后的效果。
   
   为了检验本文遗忘方法的有效性，我们设计了四个实验来进行验证。实验结果表明，本文提出的方法可以在不损失保留类别准确率的条件下达到理想的遗忘效果。
   通过与完全重新训练后的网络进行对比，我们发现两个网络在输出上能够达到足够的相似，而且本文的遗忘方法在收敛时间上与完全重新训练相比具有很大优势。
-  我们还对本文遗忘方法的使用次数进行了实验验证。实验结果表明，本文的遗忘方法可以用于连续性的遗忘操作而不会降低遗忘效果。
+  我们还对本文遗忘方法重复使用的情况进行了实验验证。实验结果表明，本文的遗忘方法可以用于连续性的遗忘操作而不会降低遗忘效果。
 
   % 关键词用“英文逗号”分隔，输出时会自动处理为正确的分隔符
   \thusetup{
@@ -36,10 +36,11 @@
   Many researchers have put forward their own ideas, but there is still no mature forgetting method, and the same is true for forgetting methods for convolutional neural networks. 
   In the current situation that convolutional neural networks are widely used, it is very important to study the forgetting methods of convolutional neural networks.
   Today, the development of machine learning technology is in full swing. We are inspired by transfer learning and shared parameter incremental learning technology, and try to use the shared parameter method to solve the forgotten retraining problem.  
-  We analyzed the original intention of the convolutional neural network and found that the convolutional neural network is very similar to the human visual information processing mechanism.
+  We analyzed the original intention of the convolutional neural network and found that the convolutional neural network is very similar to the biological visual information processing mechanism.
   In this article, we use the hierarchical abstract characteristics of the convolutional neural network to design a method for forgetting specifically for the convolutional neural network. 
   This method can achieve the ideal forgetting effect when only part of the network parameters are trained.
   After that, we quoted three indicators to evaluate the effect of the convolutional neural network after forgetting.
+  
   In order to test the effectiveness of the forgetting method in this paper, we designed four experiments to verify it. 
   The experimental results show that the method proposed in this paper can achieve the ideal forgetting effect without losing the accuracy of the retention category.
   By comparing with the completely retrained network, it is found that the output of the two networks can achieve sufficient similarity, 
