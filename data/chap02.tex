@@ -40,6 +40,34 @@ Izzo Zachary和Anne Smart等人\cite{pmlr-v130-izzo21a}使用了基于影响函�
 Wu Yinjun和Dobriban Edgar等人\cite{pmlr-v119-wu20b}利用训练过程中存储的数据进行了参数还原。
 Neel Seth和Roth Aaron等人\cite{pmlr-v132-neel21a}通过增加噪声实现遗忘。
 Du Min和Chen Zhi等人\cite{10.1145/3319535.3363226}利用了反向更新梯度的方法实现异常检测模型的还原。
+相关工作的比较情况如表\ref{tab:forget-methods}所示，我们从遗忘方法是否修改了网络参数，是否修改了损失函数，是否使用了保留集训练等七个方面进行了对比。
+通过比较可以看出，大部分的方法都使用了修改网络参数的办法而且遗忘时需要使用保留集进行训练。另外，仅有本文考虑到了卷积神经网络的分层抽象特性。
+
+\begin{table}
+    \centering
+    \caption{神经网络遗忘方法相关工作比较}
+    \begin{tabular}{p{3cm}<{\centering}p{1cm}<{\centering}p{1cm}<{\centering}p{1cm}<{\centering}p{1.5cm}<{\centering}p{1.5cm}<{\centering}p{2cm}<{\centering}}
+    %\begin{tabular}{ccccccc}
+      \toprule
+      相关论文  & 修改网络参数 & 修改损失函数  &修改网络结构&遗忘时使用遗忘集训练&遗忘时使用保留集训练&考虑了卷积神经网络的分层抽象特性\\
+      \midrule
+
+      Aditya Golatkar et al.\cite{Golatkar_2020_CVPR} &是&否&否&否&是&否 \\
+      Aditya Golatkar et al.\cite{Golatkar_2021_CVPR} &是&是&否&否&是&否 \\
+      Aditya Golatkar et al.\cite{10.1007/978-3-030-58526-6_23} &是&否&否&否&否&否 \\
+      Baumhauer Thomas et al.\cite{2020arXiv200202730B} &否&否&是&是&否&否 \\
+      Bourtoule Lucas et al.\cite{2019arXiv191203817B} &是&否&是&否&是&否 \\
+      Guo Chuan et al.\cite{pmlr-v119-guo20c} &是&是&否&否&是&否 \\
+      Izzo Zachary et al.\cite{pmlr-v130-izzo21a} &是&是&否&否&是&否 \\
+      Wu Yinjun et al.\cite{pmlr-v119-wu20b} &是&否&否&是&否&否 \\
+      Neel Seth et al.\cite{pmlr-v132-neel21a}方法一 &是&否&否&否&是&否 \\
+      Neel Seth et al.\cite{pmlr-v132-neel21a}方法二 &是&否&是&否&是&否 \\
+      本文 &是&否&否&否&是&是 \\
+
+      \bottomrule
+    \end{tabular}
+    \label{tab:forget-methods}
+\end{table}
 
 \section{可共享网络参数人工神经网络相关研究}
 
