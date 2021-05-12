@@ -3,19 +3,18 @@
 % 中英文摘要和关键字
 
 \begin{abstract}
-  当今以人脸识别、自然语言处理为代表的人工智能技术被广泛应用于社会的各个领域。机器学习模型所需要的训练数据往往来自于我们日常的生活当中。
-  在人们不断地用数据去训练机器学习模型时，却往往忽略了隐藏在机器学习模型里的个人隐私。
-  有研究表明\cite{10.5555/3241094.3241142,Fredrikson2015}，仅通过收集神经网络的输出信息就能还原用于机器学习模型训练的数据信息。随着人们隐私保护意识的不断提高，用户要求机器学习模型具有遗忘功能的要求也随之而来。
-  不仅这样，欧盟等国家为了更好地保护公民的个人隐私而颁布了《通用数据保护条例（GDPR）》，这也推动了机器学习模型遗忘方法的相关研究。
-  当我们需要机器学习模型去遗忘数据时，现在的机器学习模型除了对模型完全重新训练之外，尚且没有比较成熟的方法进行高效地遗忘。
-  现有工作通常使用分割网络式重新训练或增加噪音的方法来进行遗忘。分割网络式重新训练方法的模型会造成大量的参数存储，而增加噪音的遗忘方法会不可避免地降低保留集的分类准确率。
-  我们分析了卷积神经网络的设计初衷，发现卷积神经网络与生物视觉信息处理机制十分相似，我们称之为卷积网络的分层抽象特性。
-  经过调研后发现，卷积网络分层训练的方法已在迁移学习和增量学习的领域中被采用过，可是仍未被用于遗忘。
-  在本文中，我们利用卷积神经网络的分层抽象特性设计出了专门针对卷积神经网络进行遗忘的方法。
-  这个方法可以只在训练部分网络参数的情况下达到理想的遗忘效果。
-  之后，我们引用了三个指标用来评价卷积神经网络遗忘之后的效果。
+
+  当今以人脸识别、自然语言处理为代表的人工智能技术被广泛应用于社会的各个领域。越来越多的个人数据被用来训练模型的同时，个人隐私泄露问题也逐渐浮出水面。
+  有研究表明\cite{10.5555/3241094.3241142,Fredrikson2015}，仅通过神经网络的模型参数就能还原用于训练模型的数据信息。
+  为了防止自己的隐私泄露，当人们不再使用该服务时，希望模型能够“忘记”自己提供过的数据。可是现在的机器学习模型的遗忘方法没有成熟的理论。
+  欧盟等国家为了更好地保护公民的个人隐私而颁布了《通用数据保护条例（GDPR）》，这为机器学习模型遗忘方法的研究增加了一定的紧迫性。
+  当前具有代表性的相关工作通常使用分割网络式重新训练或使用增加噪音的方法来进行遗忘。分割网络式重新训练方法的模型会造成大量的参数存储，而增加噪音的遗忘方法仍然会使用保留数据来训练全部网络，网络的收敛时间无法得到保证。
+  本文从卷积神经网络的分层抽象特性出发，专注研究如何使得卷积神经网络的机器学习模型快速且有效地忘记训练数据，提出了只训练部分参数就能达到理想遗忘效果的遗忘方案，该方案能够适用于所有使用卷积神经网络训练的模型。
+  卷积神经网络自身的设计结构导致较低层次的参数提取的是和输入信息联系比较密切的基础信息，较高层次的参数提取的是和分类密切相关的特征。所以我们只需要重置和分类密切相关的参数就能达到理想的遗忘效果。
+  该方案可以大致分为三个步骤：确定重置层数，冻结并重置参数和再训练网络。为了评价遗忘效果，我们引用了三个评价指标，分别是测试准确率、收敛时间和激活距离。
   
-  为了检验本文遗忘方法的有效性，我们设计了四个实验来进行验证。实验结果表明，本文提出的方法可以在不损失保留类别准确率的条件下达到理想的遗忘效果。
+  为了检验本文遗忘方法的有效性，我们设计了四个实验来进行验证，分别是确定冻结层数实验，冻结必要性验证实验，反向冻结验证实验和遗忘可持续性验证实验。
+  实验结果表明，本文提出的方法可以在不损失保留类别准确率的条件下达到理想的遗忘效果。
   通过与完全重新训练后的网络进行对比，我们发现两个网络在输出上能够达到足够的相似，而且本文的遗忘方法在收敛时间上与完全重新训练的时间相比能够缩短一半以上。
   我们还对本文遗忘方法重复使用的情况进行了实验验证。实验结果表明，本文的遗忘方法可以用于连续性的遗忘操作而不会降低遗忘效果。
 
@@ -27,23 +26,27 @@
 
 \begin{abstract*}
   Today, artificial intelligence technologies represented by face recognition and natural language processing are widely used in various fields of society. 
-  The training data required by machine learning models often comes from our daily lives.
-  When people continue to use data to train machine learning models, they often ignore the personal privacy hidden in the machine learning models.
-  Studies have shown that only by collecting the output information of the neural network, the data information used for machine learning model training can be restored. 
-  With the continuous improvement of people's awareness of privacy protection, users' requirements for machine learning models with forgetting functions also follow.
-  Not only that, the European Union and other countries have promulgated the General Data Protection Regulation (GDPR) in order to better protect the personal privacy of citizens, 
-  which has also promoted related research on the forgetting method of machine learning models.
-  When we need a machine learning model to forget data, the current machine learning model does not have a more mature method for efficient forgetting except for the complete retraining of the model.
-  Existing work usually uses the method of segmentation network retraining or adding noise to forget. The model of the segmented network retraining method will cause a large amount of parameter storage, 
-  and the forgetting method that increases the noise will inevitably reduce the classification accuracy of the retained set.
-  We analyzed the original intention of the convolutional neural network, and found that the convolutional neural network is very similar to the biological visual information processing mechanism, 
-  which we call the hierarchical abstract characteristic of the convolutional network.
-  After investigation, it is found that the method of layered training of convolutional network has been used in the field of transfer learning and incremental learning, but it has not been used for forgetting.
-  In this article, we use the hierarchical abstract characteristics of the convolutional neural network to design a method for forgetting specifically for the convolutional neural network.
-  This method can achieve the ideal forgetting effect when only part of the network parameters are trained.
-  After that, we quoted three indicators to evaluate the effect of the convolutional neural network after forgetting.
-
-  In order to test the effectiveness of the forgetting method in this paper, we designed four experiments to verify it. 
+  As more and more personal data are used to train models, the problem of personal privacy leakage has gradually surfaced.
+  Studies\cite{10.5555/3241094.3241142,Fredrikson2015} have shown that only the model parameters of the neural network can restore the data information used to train the model.
+  In order to prevent their privacy from leaking, when people no longer use the service, it is hoped that the model can "forget" the data they have provided. 
+  However, the current forgetting method of machine learning models has no mature theory.
+  The European Union and other countries have formulated the "General Data Protection Regulation (GDPR)" in order to better protect the personal privacy of citizens. 
+  This is an increase in the urgency of the study of machine learning model forgetting methods.
+  Existing representative related work is the use of segmentation network retraining or the use of noise-increasing methods for forgetting. 
+  The model of the split network retraining method will cause a large amount of parameter storage, and the forgetting method of increasing noise will still use the reserved data to train the entire network, 
+  and the convergence time of the network cannot be guaranteed.
+  Starting from the hierarchical abstract characteristics of convolutional neural networks, 
+  this paper focuses on how to make the machine learning model of convolutional neural networks forget the training data quickly and effectively, 
+  and proposes a forgetting scheme that can achieve the ideal forgetting effect by training only part of the parameters. 
+  The solution can be applied to all models trained using convolutional neural networks.
+  The design structure of the convolutional neural network itself causes the lower-level parameters to extract basic information that is more closely related to the input information, 
+  and the higher-level parameters to extract features that are closely related to classification.
+  So we only need to reset the parameters closely related to the classification to achieve the desired forgetting effect.
+  The scheme can be roughly divided into three steps: determining the number of reset layers, freezing and resetting parameters, and retraining the network. 
+  In order to evaluate the effect of forgetting, we quoted three evaluation indicators, namely test accuracy, convergence time and activation distance.
+  
+  In order to test the effectiveness of the forgetting method in this paper, we designed four experiments for verification, 
+  namely, the determination of the freezing layer number, the freezing necessity verification experiment, the reverse freezing verification experiment and the forgetting sustainability verification experiment.
   The experimental results show that the method proposed in this paper can achieve the ideal forgetting effect without losing the accuracy of the retention category.
   By comparing with the completely retrained network, we found that the two networks can achieve sufficient similarity in output, 
   and the forgetting method in this paper can shorten the convergence time by more than half compared with the time of complete retraining.
