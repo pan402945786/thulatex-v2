@@ -12,22 +12,26 @@ Antonio Ginart和Melody Y. Guan等人\cite{antonio2019}对于k-means机器学习
 Anthony D’Amato和Matthieu Boussard\cite{10.1007/978-3-319-40159-1_19}提出了一种基于决策树的遗忘算法。本文将讨论基于卷积神经网络的遗忘方法，暂不对非神经网络的遗忘方法进行讨论。
 
 \subsection{基于神经网络遗忘方法}
-Bourtoule Lucas和Chandrasekaran Varun等人\cite{2019arXiv191203817B}提出了一种可以用在神经网络上的遗忘方法。作者首先将训练数据集分成若干互不相交的部分，然后利用每个部分单独训练出一个神经网络模型。网络最终输出的结果将多个神经网络模型输出的结果综合起来，最终输出一个结果。
-遗忘的时候，只需要重新训练要遗忘的训练样例所在的神经网络，而无需重新训练所有神经网络模型，过程如图~\ref{fig:machine_unlearning}所示。这样的方式虽然能够减少重新训练的工作量，但仍未摆脱重新训练的模式，而且训练如此多的神经网络也造成了参数的浪费。
+Bourtoule Lucas和Chandrasekaran Varun等人\cite{2019arXiv191203817B}提出了一种可以用在神经网络上的遗忘方法，过程如图\ref{fig:machine_unlearning}所示。
+作者首先将训练数据集分成若干互不相交的部分，然后利用每个部分单独训练出一个神经网络模型。网络最终输出的结果将多个神经网络模型输出的结果综合起来，最终输出一个结果。
+遗忘的时候，只需要重新训练要遗忘的训练样例所在的神经网络，而无需重新训练所有神经网络模型
+。这样的方式虽然能够减少重新训练的工作量，但仍未摆脱重新训练的模式，而且训练如此多的神经网络也造成了参数的浪费。
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\linewidth]{machine_unlearning.png}
-    \caption{将数据集分成若干互不相交集合分别训练\cite{2019arXiv191203817B}}
+    \includegraphics[width=0.7\linewidth]{machine_unlearning.png}
+    \caption{将数据集分成若干互不相交集合分别训练}
     \label{fig:machine_unlearning}
 \end{figure}
-\begin{figure}
-    \centering
-    \includegraphics[width=0.9\linewidth]{eternal_sunshine.png}
-    \caption{基于增加噪音和正则化的遗忘方法\cite{2019arXiv191203817B}}
-    \label{fig:eternal_sunshine}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.9\linewidth]{eternal_sunshine.png}
+%     \caption{基于增加噪音和正则化的遗忘方法\cite{2019arXiv191203817B}}
+%     \label{fig:eternal_sunshine}
+% \end{figure}
 
-Golatkar Aditya和Achille Alessandro等人\cite{Golatkar_2020_CVPR}实现了一种通过在权重上增加噪音的方法来逐渐减少神经网络参数对遗忘数据的信息量，如图~\ref{fig:eternal_sunshine}所示。这篇文献提出了一些值得借鉴的衡量遗忘效果的指标，比如遗忘集的测试准确率，保留集的测试准确率。
+Golatkar Aditya和Achille Alessandro等人\cite{Golatkar_2020_CVPR}实现了一种通过在权重上增加噪音的方法来逐渐减少神经网络参数对遗忘数据的信息量
+% ，如图~\ref{fig:eternal_sunshine}所示
+。这篇文献提出了一些值得借鉴的衡量遗忘效果的指标，比如遗忘集的测试准确率，保留集的测试准确率。
 文献中还提出了模型置信指标，就是计算目标神经网络与此文方法遗忘之后的网络在遗忘集和保留集上的交叉熵。这些指标在实际应用上具有参考价值，因此本文也引用了这些评价指标。
 文献中还提到了一种信息论领域常用到的信息边界衡量方法，就是计算两个网络模型参数的KL散度距离（Kullback-Leibler Divergence）。这种方法经常用于量化两个随机变量概率分布的相似性。
 然而，遗忘的目的并不只是简单地让网络的参数去接近目标网络，而是在实际效果上看两个网络的输出是否相近。因为思路上有本质的不同，所以这个衡量指标并没有被本文所采用。这个方法虽然在遗忘的效果上达到了较为理想的状态，然而保留类别的准确率并不是很理想。
@@ -88,7 +92,7 @@ Yosinski Jason和Clune Jeff等人\cite{yosinski_2014_NIPS}对深度神经网络�
 \begin{figure}
     \centering
     \includegraphics[width=0.9\linewidth]{transfer_learning_3.png}
-    \caption{共享参数的深度神经网络训练示意图\cite{yosinski_2014_NIPS}}
+    \caption{共享参数的深度神经网络训练示意图}
     \label{fig:transfer_learning_3}
 \end{figure}
 
@@ -97,13 +101,15 @@ Yosinski Jason和Clune Jeff等人\cite{yosinski_2014_NIPS}对深度神经网络�
 为了克服灾难性遗忘，这篇综述\cite{PARISI201954}中提到了增量学习大致可分为三种类型：基于正则化的方法，基于动态结构的方法以及基于补充学习系统和记忆重放的方法。其中，基于动态结构的方法使用了共享网络参数的方法，这对本文启发较大。
 
 Zhizhong Li和Derek Hoiem\cite{8107520}对增量学习的方法进行了分类。如图\ref{fig:incremental_learning_1}所示，图中展示了一个已经学习完成的网络在遇到新的学习任务时可能的学习方法。
-（a）中是原来已经学习好的模型，前半部分是卷积神经网络，后半部分是全连接层。当加入一个新的类别后，大概有三种可能的解决方法。一种是微调（fine-tuning），即在原来的网络上用新的训练数据直接训练。这样的方法会导致灾难性遗忘。
-第二种方法是联合训练（Joint Training），就是用新的训练数据和旧的训练数据同时训练原有的网络。这样带来的效果是比较好的，但是重新训练的成本是很大的。
-第三种方法是特征提取（Feature Extraction）的方法。和以前训练好的网络分享一部分参数，这部分参数不用来更新，然后用新的训练数据继续训练没有被冻结的参数。这样的方法可能的问题是新的训练数据也具有自己独特的数据特征，这样的特征由于网络参数的冻结而无法被原有网络提取，因此最终的效果也不会很好。
+（a）中是原来已经学习好的模型，前半部分是卷积神经网络，后半部分是全连接层。当加入一个新的类别后，大概有三种可能的解决方法。
+子图（b）一种是微调训练（Fine-tuning），即在原来的网络上用新的训练数据直接训练。这样的方法会导致灾难性遗忘。
+子图（c）是特征提取（Feature Extraction）的方法。和以前训练好的网络分享一部分参数，这部分参数不用来更新，然后用新的训练数据继续训练没有被冻结的参数。
+子图（d）是联合训练（Joint Training），就是用新的训练数据和旧的训练数据同时训练原有的网络。这样带来的效果是比较好的，但是重新训练的成本是很大的。
+这样的方法可能的问题是新的训练数据也具有自己独特的数据特征，这样的特征由于网络参数的冻结而无法被原有网络提取，因此最终的效果也不会很好。
 \begin{figure}
     \centering
     \includegraphics[width=0.9\linewidth]{incremental_learning_1.png}
-    \caption{增量学习方法分类\cite{8107520}}
+    \caption{增量学习方法分类}
     \label{fig:incremental_learning_1}
 \end{figure}
 
@@ -111,8 +117,8 @@ Sarwar Syed Shakib和Ankit Aayush等人\cite{Sarwar_2020}通过共享网络层�
 当需要做预测时，将两个网络的输出综合起来，判断应当输出的结果。这样的网络随着新类别的增加而逐渐变得庞大。但是我们从中可以借鉴到共享网络参数的思想。
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\linewidth]{incremental_learning_2.png}
-    \caption{共享网络参数的增量学习\cite{Sarwar_2020}}
+    \includegraphics[width=0.7\linewidth]{incremental_learning_2.png}
+    \caption{共享网络参数的增量学习}
     \label{fig:incremental_learning_2}
 \end{figure}
 
