@@ -13,7 +13,7 @@
   卷积神经网络自身的设计结构导致较低层次的参数提取的是和输入信息联系比较密切的基础信息，较高层次的参数提取的是和分类密切相关的特征。所以我们只需要重置和分类密切相关的参数就能达到理想的遗忘效果。
   该方案可以大致分为三个步骤：确定重置层数，冻结并重置参数和再训练网络。为了评价遗忘效果，我们引用了三个评价指标，分别是测试准确率、收敛时间和激活距离。
   
-  为了检验本文遗忘方法的有效性，我们设计了四个实验来进行验证，分别是确定冻结层数实验，冻结必要性验证实验，反向冻结验证实验和遗忘可持续性验证实验。
+  为了检验本文遗忘方法的有效性，我们设计了确定冻结层数实验，冻结必要性验证实验和遗忘可持续性验证实验。
   实验结果表明，本文提出的方法可以在不损失保留类别准确率的条件下达到理想的遗忘效果。
   通过与完全重新训练后的网络进行对比，我们发现两个网络在输出上能够达到足够的相似，而且本文的遗忘方法在收敛时间上与完全重新训练的时间相比能够缩短一半以上。
   我们还对本文遗忘方法重复使用的情况进行了实验验证。实验结果表明，本文的遗忘方法可以用于连续性的遗忘操作而不会降低遗忘效果。
@@ -45,8 +45,8 @@
   The scheme can be roughly divided into three steps: determining the number of reset layers, freezing and resetting parameters, and retraining the network. 
   In order to evaluate the effect of forgetting, we quoted three evaluation indicators, namely test accuracy, convergence time and activation distance.
   
-  In order to test the effectiveness of the forgetting method in this paper, we designed four experiments for verification, 
-  namely, the determination of the freezing layer number, the freezing necessity verification experiment, the reverse freezing verification experiment and the forgetting sustainability verification experiment.
+  In order to test the effectiveness of the forgetting method in this paper, we designed an experiment to determine the number of freezing layers, 
+  an experiment to verify the necessity of freezing, and an experiment to verify the sustainability of forgetting.
   The experimental results show that the method proposed in this paper can achieve the ideal forgetting effect without losing the accuracy of the retention category.
   By comparing with the completely retrained network, we found that the two networks can achieve sufficient similarity in output, 
   and the forgetting method in this paper can shorten the convergence time by more than half compared with the time of complete retraining.
