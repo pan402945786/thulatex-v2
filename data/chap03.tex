@@ -7,50 +7,227 @@
 \section{卷积神经网络介绍}
 
 \subsection{卷积神经网络结构}
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{反向冻结算法-内循环 reverse\_freeze\_reset\_inner\_cycle}
+	\label{algorithm:reverse_freeze_reset_inner_cycle}
+	\begin{algorithmic}[1]
+        \REQUIRE 模型总层数total\_layers,初始化参数层数i,遗忘类别C\_forget,保留测试集D\_retain\_test,遗忘测试集D\_forget\_test
+        \ENSURE  $acc\_reverse\_retain\_i, acc\_reverse\_forget\_i  $
 
-\begin{algorithm}  
-    \caption{用归并排序求逆序数}  
-    \begin{algorithmic}[1] %每行显示行号  
-        \Require $Array$数组，$n$数组大小  
-        \Ensure 逆序数  
-        \Function {MergerSort}{$Array, left, right$}  
-            \State $result \gets 0$  
-            \If {$left < right$}  
-                \State $middle \gets (left + right) / 2$  
-                \State $result \gets result +$ \Call{MergerSort}{$Array, left, middle$}  
-                \State $result \gets result +$ \Call{MergerSort}{$Array, middle, right$}  
-                \State $result \gets result +$ \Call{Merger}{$Array,left,middle,right$}  
-            \EndIf  
-            \State \Return{$result$}  
-        \EndFunction  
-        \State  
-        \Function{Merger}{$Array, left, middle, right$}  
-            \State $i\gets left$  
-            \State $j\gets middle$  
-            \State $k\gets 0$  
-            \State $result \gets 0$  
-            \While{$i<middle$ \textbf{and} $j<right$}  
-                \If{$Array[i]<Array[j]$}  
-                    \State $B[k++]\gets Array[i++]$  
-                \Else  
-                    \State $B[k++] \gets Array[j++]$  
-                    \State $result \gets result + (middle - i)$  
-                \EndIf  
-            \EndWhile  
-            \While{$i<middle$}  
-                \State $B[k++] \gets Array[i++]$  
-            \EndWhile  
-            \While{$j<right$}  
-                \State $B[k++] \gets Array[j++]$  
-            \EndWhile  
-            \For{$i = 0 \to k-1$}  
-                \State $Array[left + i] \gets B[i]$  
-            \EndFor  
-            \State \Return{$result$}  
-        \EndFunction  
-    \end{algorithmic}  
-\end{algorithm}  
+		\STATE $model\_reset\_train\_before\_i \gets mergeModel(model\_init, model\_normal, total\_layers, total\_layers - i)$
+		\STATE $model\_reset\_after\_train\_i \gets$ \\
+         $trainNet(model\_reset\_train\_before\_i , D\_retain\_test, P\_freeze, T\_threshold)$
+		\STATE $acc\_reverse\_retain\_i \gets getAcc(model\_reset\_after\_train\_i, D\_retain\_test)$
+		\STATE $acc\_reverse\_forget\_i  \gets getAcc(model\_reset\_after\_train\_i, D\_forget\_test)$
+	\end{algorithmic}  
+\end{algorithm}
 
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{反向冻结算法-外循环 reverse\_reset\_outer\_cycle}
+	\label{algorithm:reverse_reset_outer_cycle}
+	\begin{algorithmic}[1]
+        \REQUIRE 模型总层数total\_layers,遗忘类别C\_forget,保留测试集D\_retain\_test,遗忘测试集D\_forget\_test
+        \ENSURE  
+        \STATE $D\_retain\_train, D\_forget\_train, D\_retain\_test, D\_forget\_test \gets dispartDataset(trainset, testset, C\_forget)$
+        \STATE $model\_init \gets net.save\_model()$
+        \STATE $model\_normal,T\_converge\_normal \gets trainNet(model\_init, trainset, P\_freeze, T\_threshold)$
+        \STATE $model\_retrain,T\_converge\_retrain \gets trainNet(model\_init, D\_retain\_train, [], T\_threshold)$
+        \FOR {$i \to total\_layers$}
+            \STATE $reverse\_reset\_inner\_cycle(total\_layers, i, C\_forget, D\_retain\_test, D\_forget\_test)$
+        \ENDFOR
+	\end{algorithmic}  
+\end{algorithm}
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{正向冻结算法-内循环 normal\_freeze\_reset\_inner\_cycle}
+	\label{algorithm:normal_freeze_reset_inner_cycle}
+	\begin{algorithmic}[1]
+        \REQUIRE 模型总层数$total\_layers$,初始化参数层数$i$,遗忘类别$C\_forget$,保留训练集$D\_retain\_train$,保留测试集$D\_retain\_test$,遗忘测试集$D\_forget\_test$,对比模型$model\_retrain$
+        \ENSURE  $acc\_normal\_freeze\_retain\_i,acc\_normal\_freeze\_forget\_i,distance\_normal\_freeze\_retain\_i,distance\_normal\_freeze\_forget\_i,T\_converge\_i$
+		\STATE $model\_reset\_train\_before\_i \gets mergeModel(model\_normal, model\_init, total\_layers, i)$
+        \STATE $model\_reset\_after\_train\_i,T\_converge\_i \gets trainNet(model\_reset\_train\_before\_i , D\_retain\_train, P\_freeze, T\_threshold)$
+        \STATE $acc\_reverse\_retain\_i \gets getAcc(model\_reset\_after\_train\_i, D\_retain\_test)$
+        \STATE $acc\_reverse\_forget\_i  \gets getAcc(model\_reset\_after\_train\_i, D\_forget\_test)$
+        \STATE $distance\_normal\_freeze\_retain\_i \gets getDistance(model, model\_retrain, D\_retain\_test)$
+        \STATE $distance\_normal\_freeze\_forget\_i \gets getDistance(model, model\_retrain, D\_forget\_test)$
+	\end{algorithmic}  
+\end{algorithm}
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{正向冻结算法-外循环 normal\_reset\_outer\_cycle}
+	\label{algorithm:normal_reset_outer_cycle}
+	\begin{algorithmic}[1]
+        \REQUIRE 模型总层数$total\_layers$,遗忘类别$C\_forget$,保留测试集$D\_retain\_test$,遗忘测试集$D\_forget\_test$
+        \ENSURE  
+        \STATE $D\_retain\_train, D\_forget\_train, D\_retain\_test, D\_forget\_test \gets dispartDataset(trainset, testset, C\_forget)$
+        \STATE $model\_init \gets net.save\_model()$
+        \STATE $model\_normal,T\_converge\_normal \gets trainNet(model\_init, trainset, P\_freeze, T\_threshold)$
+        \STATE $model\_retrain,T\_converge\_retrain \gets trainNet(model\_init, D\_retain\_train, [], T\_threshold)$
+        \FOR {$i \to total\_layers$}
+            \STATE $normal\_reset\_inner\_cycle(total\_layers, i, C\_forget, D\_retain\_train, D\_retain\_test, D\_forget\_test)$
+        \ENDFOR
+	\end{algorithmic}  
+\end{algorithm}
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{持续遗忘算法 continuous\_forget}
+	\label{algorithm:continuous_forget}
+	\begin{algorithmic}[1]
+        \REQUIRE 数据集类别总数$total\_classes$,网络收敛损失函数限值$T\_threshold$
+        \ENSURE  
+        \FOR {$i \to total\_classes.length - 1$}
+            \STATE $forget\_classes \gets []$
+            \FOR {$j \to i$}
+                \STATE $forget\_classes.push(total\_classes[j])$
+            \ENDFOR
+            \STATE $train\_retain,train\_forget,test\_retain,test\_forget \gets dispartDataset(trainset, testset, C\_forget)$
+            \STATE $C\_forget \gets forget\_classes$
+            \STATE $retrain\_model,T\_converge\_retrain \gets trainNet(model\_init, train\_retain, [],$ \\ $ T\_threshold)$
+            \STATE $gen\_model, T\_converge\_gen \gets normal\_freeze\_reset\_inner\_cycle($\\$total\_layers, i, C\_forget,D\_retain\_train,D\_retain\_test, D\_forget\_test,$\\$retrain\_model )$
+            \STATE $acc\_retrain\_retain \gets getAcc(retrain\_model, D\_retain\_test)$
+            \STATE $acc\_retrain\_forget  \gets getAcc(retrain\_model, D\_forget\_test)$
+            \STATE $acc\_forget\_i\_kinds\_retain \gets getAcc(gen\_model, D\_retain\_test)$
+            \STATE $acc\_forget\_i\_kinds\_forget  \gets getAcc(gen\_model, D\_forget\_test)$
+            \STATE $distance\_forget\_i\_kinds\_retain \gets getDistance(gen\_model, model\_retrain,$\\$D\_retain\_test)$
+            \STATE $distance\_forget\_i\_kinds\_forget \gets getDistance(gen\_model, model\_retrain, D\_forget\_test)$
+        \ENDFOR
+	\end{algorithmic}  
+\end{algorithm}
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{分离数据集方法  dispartDataset}
+	\label{algorithm:dispartDataset}
+	\begin{algorithmic}[1]
+        \REQUIRE 训练集$trainset$,测试集$testset$,遗忘类别$C\_forget$
+        \ENSURE  $train\_retain,train\_forget,test\_retain,test\_forget$
+        \FOR {$i \to trainset.length$}
+            \IF{$trainset[i].label \in C\_forget$}
+                \STATE $ train\_retain.push(trainset[i])$
+            \ELSE
+                \STATE $ train\_forget.push(trainset[i])$
+            \ENDIF
+            \IF{$testset[i].label \in C\_forget$}
+                \STATE $ test\_retain.push(testset[i])$
+            \ELSE
+                \STATE $ test\_forget.push(testset[i])$
+            \ENDIF
+        \ENDFOR
+	\end{algorithmic}  
+\end{algorithm}
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{记录测试准确率算法  getAcc}
+	\label{algorithm:getAcc}
+	\begin{algorithmic}[1]
+        \REQUIRE 待测模型$model$,保留测试集$D_test$
+        \ENSURE  测试准确率$acc$
+        \STATE $total \gets 0$
+        \STATE $corrects \gets 0$
+        \FOR {$i \to D\_test$}
+            \STATE $images, labels \gets data$
+            \STATE $net.load_model(model)$
+            \STATE $outputs \gets net(images)$
+            \STATE $predict \gets max(outputs.data, index)$
+            \STATE $total \gets total + D_test[i].length$
+            \STATE $corrects \gets corrects + (predict == labels).sum()$
+        \ENDFOR
+        \STATE $acc \gets corrects / total$
+	\end{algorithmic}  
+\end{algorithm}
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{记录激活距离算法  getDistance}
+	\label{algorithm:getDistance}
+	\begin{algorithmic}[1]
+        \REQUIRE 待测模型$model$,对照模型$model\_cmp$,保留测试集$D\_test$
+        \ENSURE  激活距离$distance$
+        \STATE $norm\_total \gets 0$
+        \STATE $total \gets 0$
+        \FOR {$data in D\_test$}
+            \STATE $total \gets total + data.length$
+            \STATE $images, labels \gets data$
+            \STATE $net.load\_model(model)$
+            \STATE $outputs \gets net(images)$
+            \STATE $probability\_to\_test \gets softmax(outputs)$
+            \STATE $net.load\_model(model\_cmp)$
+            \STATE $outputs\_target \gets net(images)$
+            \STATE $probability\_target \gets softmax(outputs\_target)$
+            \STATE $diff \gets probability\_to\_test - probability\_target $
+            \FOR {$i \to diff.length$}
+                \STATE $norm\_total \gets norm\_total + norm(diff[i],2)$
+            \ENDFOR
+        \ENDFOR
+        \STATE $distance \gets norm\_total \div total$
+	\end{algorithmic}  
+\end{algorithm}
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{训练网络与记录收敛时间算法  trainNet}
+	\label{algorithm:trainNet}
+	\begin{algorithmic}[1]
+        \REQUIRE 初始模型$model\_init$,训练数据$Dataset$,冻结参数集合$P\_freeze$,收敛时间限值$T\_threshold$
+        \ENSURE  $new\_model,T\_converge $
+        \STATE $EPOCH \gets init\_hyper\_parameter\_value$
+        \STATE $criterion \gets crossEntropyLoss$
+        \STATE $T\_converge \gets null$
+        \STATE $net.load\_model(model\_init)$
+        \FOR {$params in net.params()$}
+            \IF {$params.name \in P\_freeze$}
+                \STATE $params.requires\_grad \gets True$
+            \ENDIF
+        \ENDFOR
+        \FOR {$epoch \to EPOCH$}
+            \STATE $loss\_sum \gets 0$
+            \STATE $dataLength \gets 0$
+            \STATE $inputs, labels \gets data$
+            \STATE $dataLength \gets data.length$
+            \FOR {$data \in Dataset$}
+                \STATE $inputs,labels \gets data$
+                \STATE $outputs \gets net(inputs)$
+                \STATE $loss \gets criterion(outputs, labels)$
+                \STATE $loss.backward()$
+                \STATE $loss\_sum \gets loss + loss.item()$
+            \ENDFOR
+            \IF {$(loss\_sum \div dataLength < T\_threshold) and (T\_converge == null)$}
+                \STATE $T\_converge \gets epoch$
+            \ENDIF
+        \ENDFOR
+        \STATE $new\_model \gets net.save()$
+	\end{algorithmic}  
+\end{algorithm}
+
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{模型组合算法 mergeModel}
+	\label{algorithm:mergeModel}
+	\begin{algorithmic}[1]
+        \REQUIRE 前部分模型$former\_model$,后部分模型$later\_model$,模型总层数$total\_layers$,前部分模型重置层数$former\_reset\_layer\_count$
+        \ENSURE  $merged\_model$
+        \FOR {$i \to later\_layer\_count$}
+            \STATE $former\_model[total\_layers - i] \gets later\_model[total\_layers - i]$
+        \ENDFOR
+        \STATE $merged\_model \gets former\_model$
+	\end{algorithmic}  
+\end{algorithm}
 
 卷积神经网络和多层感知机的神经网络类似，它们都可以通过像堆积木一样来组装构建。卷积神经网络和多层感知机不同的是卷积网络特有的卷积层（Convolution Layer）和池化层（Pooling Layer）。
 
