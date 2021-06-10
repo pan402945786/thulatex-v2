@@ -343,19 +343,19 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 	\caption{记录测试准确率算法  getAcc}
 	\label{algorithm:getAcc}
 	\begin{algorithmic}[1]
-        \REQUIRE 待测模型$model$,保留测试集$D\_test$
+        \REQUIRE 待测模型$model$,测试集$D_{test}$
         \ENSURE  测试准确率$acc$
         \STATE $total \gets 0$
         \STATE $corrects \gets 0$
-        \FOR {$i \to D\_test$}
-            \STATE $images, labels \gets D\_test[i]$
+        \FOR {$i \to D_{test}$}
+            \STATE $images, labels \gets D_{test}[i]$
             \STATE $net.load\_model(model)$
             \STATE $outputs \gets net(images)$
             \STATE $predict \gets max(outputs.data, index)$
-            \STATE $total \gets total + D\_test[i].length$
+            \STATE $total \gets total + D_{test}[i].length$
             \STATE $corrects \gets corrects + (predict == labels).sum()$
         \ENDFOR
-        \STATE $acc \gets corrects \div total$
+        \STATE $acc \gets corrects {\ } / {\ } total$
 	\end{algorithmic}  
 \end{algorithm}
 
@@ -398,7 +398,7 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
                 \STATE $loss.backward()$
                 \STATE $loss\_sum \gets loss + loss.item()$
             \ENDFOR
-            \IF {$(loss\_sum \div dataLength < T_{threshold}) and (T\_converge == null)$}
+            \IF {$(loss\_sum {\ } / {\ } dataLength < T_{threshold}) and (T\_converge == null)$}
                 \STATE $T\_converge \gets epoch$
             \ENDIF
         \ENDFOR
@@ -418,11 +418,11 @@ I_{distance} = {\mathbb{E}}_{x\in {\mathcal{D}_{test}}}[{\Vert softmax(f_w(x)) -
 	\caption{记录激活距离算法  getDistance}
 	\label{algorithm:getDistance}
 	\begin{algorithmic}[1]
-        \REQUIRE 待测模型$model$,对照模型$model\_cmp$,保留测试集$D\_test$
+        \REQUIRE 待测模型$model$,对照模型$model\_cmp$,保留测试集$D_{test}$
         \ENSURE  激活距离$distance$
         \STATE $norm\_total \gets 0$
         \STATE $total \gets 0$
-        \FOR {$data in D\_test$}
+        \FOR {$data in D_{test}$}
             \STATE $total \gets total + data.length$
             \STATE $images, labels \gets data$
             \STATE $net.load\_model(model)$
@@ -436,7 +436,7 @@ I_{distance} = {\mathbb{E}}_{x\in {\mathcal{D}_{test}}}[{\Vert softmax(f_w(x)) -
                 \STATE $norm\_total \gets norm\_total + norm(diff[i],2)$
             \ENDFOR
         \ENDFOR
-        \STATE $distance \gets norm\_total \div total$
+        \STATE $distance \gets norm\_total {\ } / {\ } total$
 	\end{algorithmic}  
 \end{algorithm}
 
