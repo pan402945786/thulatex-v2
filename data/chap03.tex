@@ -348,14 +348,19 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
         \STATE $total \gets 0$
         \STATE $corrects \gets 0$
         \FOR {$i \to D_{test}$}
-            \STATE $images, labels \gets D_{test}[i]$
-            \STATE $net.load\_model(model)$
-            \STATE $outputs \gets net(images)$
-            \STATE $predict \gets max(outputs.data, index)$
+            \STATE $inputs, labels \gets D_{test}[i]$
+            \STATE $net.loadModel(model)$
+            \STATE $outputs \gets net(inputs)$
+            \STATE $predict \gets max(outputs.data)$
             \STATE $total \gets total + D_{test}[i].length$
-            \STATE $corrects \gets corrects + (predict == labels).sum()$
+            \FOR{$j \to D_{test}[i].length$}
+                \IF{$predict[j] == labels[j]$}
+                    \STATE $corrects \gets corrects + 1$
+                \ENDIF
+            \ENDFOR
         \ENDFOR
         \STATE $acc \gets corrects {\ } / {\ } total$
+        \RETURN acc
 	\end{algorithmic}  
 \end{algorithm}
 
@@ -368,6 +373,7 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 为了便于实验结果的对比，我们给收敛时间确定了一个计算公式。我们将收敛时间定义为网络训练过程中，本轮Epoch中平均的损失函数值首次下降到指定阈值时所花费的Epoch数。在本文的实验中取了三个阈值，分别是0.1，0.05和0.03。
 
 将从保留集开始训练的时刻作为起始时间是因为确定分层步骤是一次性的步骤，对于同一个网络结构，确定网络分层仅在第一次遗忘时确定一次，以后遗忘时沿用上次的网络分层即可。
+
 获取收敛时间以及训练网络具体方法如算法\ref{algorithm:trainNet}所示。
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
@@ -376,40 +382,39 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 	\label{algorithm:trainNet}
 	\begin{algorithmic}[1]
         \REQUIRE 初始模型$modelInit$,训练数据$Dataset$,冻结参数集合$P_{freeze}$,收敛时间限值$T_{threshold}$
-        \ENSURE  $new\_model,T\_converge $
+        \ENSURE  $newModel,T_{converge} $
         \STATE $EPOCH \gets init\_hyper\_parameter\_value$
         \STATE $criterion \gets crossEntropyLoss$
-        \STATE $T\_converge \gets null$
-        \STATE $net.load\_model(modelInit)$
-        \FOR {$params in net.params()$}
-            \IF {$params.name \in P_{freeze}$}
-                \STATE $params.requires\_grad \gets True$
+        \STATE $T_{converge} \gets null$
+        \STATE $net.loadModel(modelInit)$
+        \FOR {$i \to net.params.length$}
+            \IF {$net.params[i].name \in P_{freeze}$}
+                \STATE $net.params[i].requires\_grad \gets True$
             \ENDIF
         \ENDFOR
         \FOR {$epoch \to EPOCH$}
             \STATE $loss\_sum \gets 0$
-            \STATE $dataLength \gets 0$
-            \STATE $inputs, labels \gets data$
-            \STATE $dataLength \gets data.length$
-            \FOR {$data \in Dataset$}
-                \STATE $inputs,labels \gets data$
+            \STATE $dataLength \gets Dataset.length$
+            \FOR {$j \in dataLength$}
+                \STATE $inputs,labels \gets Dataset[j]$
                 \STATE $outputs \gets net(inputs)$
                 \STATE $loss \gets criterion(outputs, labels)$
                 \STATE $loss.backward()$
-                \STATE $loss\_sum \gets loss + loss.item()$
+                \STATE $loss\_sum \gets loss\_sum + loss.value$
             \ENDFOR
-            \IF {$(loss\_sum {\ } / {\ } dataLength < T_{threshold}) and (T\_converge == null)$}
-                \STATE $T\_converge \gets epoch$
+            \IF {$(loss\_sum {\ } / {\ } dataLength < T_{threshold}) and (T_{converge} == null)$}
+                \STATE $T_{converge} \gets epoch$
             \ENDIF
         \ENDFOR
-        \STATE $new\_model \gets net.save()$
+        \STATE $newModel \gets net.saveModel()$
+        \RETURN $newModel, T_{converge}$
 	\end{algorithmic}  
 \end{algorithm}
 
 \subsection{激活距离}
 激活距离是指遗忘后模型与完全重新训练模型在测试集上的平均距离。它用于衡量遗忘后模型与完全重新训练模型在网络输出结果上的相似程度。它的计算公式是
 \begin{equation}
-I_{distance} = {\mathbb{E}}_{x\in {\mathcal{D}_{test}}}[{\Vert softmax(f_w(x)) - softmax(f_{w_{\mathcal{D}_R}}) \Vert}_2 ] \label{index_distance}
+I_{distance} = {\mathbb{E}}_{x\in {\mathcal{D}_{test}}}[{\Vert softmax(f_w(x)) - softmax(f_{w_{\mathcal{D}_R}}) \Vert}_2 ] \label{equation:index_distance}
 \end{equation}
 具体计算方法如算法\ref{algorithm:getDistance}所示。
 \begin{algorithm}
@@ -418,25 +423,25 @@ I_{distance} = {\mathbb{E}}_{x\in {\mathcal{D}_{test}}}[{\Vert softmax(f_w(x)) -
 	\caption{记录激活距离算法  getDistance}
 	\label{algorithm:getDistance}
 	\begin{algorithmic}[1]
-        \REQUIRE 待测模型$model$,对照模型$model\_cmp$,保留测试集$D_{test}$
+        \REQUIRE 待测模型$model$,对照模型$modelCmp$,保留测试集$D_{test}$
         \ENSURE  激活距离$distance$
-        \STATE $norm\_total \gets 0$
-        \STATE $total \gets 0$
-        \FOR {$data in D_{test}$}
-            \STATE $total \gets total + data.length$
-            \STATE $images, labels \gets data$
-            \STATE $net.load\_model(model)$
-            \STATE $outputs \gets net(images)$
-            \STATE $probability\_to\_test \gets softmax(outputs)$
-            \STATE $net.load\_model(model\_cmp)$
-            \STATE $outputs\_target \gets net(images)$
-            \STATE $probability\_target \gets softmax(outputs\_target)$
-            \STATE $diff \gets probability\_to\_test - probability\_target $
+        \STATE $normTotal \gets 0$
+        \STATE $total \gets D_{test}.length$
+        \FOR {$i in D_{test}$}
+            \STATE $inputs, labels \gets D_{test}[i]$
+            \STATE $net.loadModel(model)$
+            \STATE $outputs \gets net(inputs)$
+            \STATE $probabilityToTest \gets softmax(outputs)$
+            \STATE $net.loadModel(modelCmp)$
+            \STATE $outputsTarget \gets net(inputs)$
+            \STATE $probabilityTarget \gets softmax(outputsTarget)$
+            \STATE $diff \gets probabilityToTest - probabilityTarget $
             \FOR {$i \to diff.length$}
-                \STATE $norm\_total \gets norm\_total + norm(diff[i],2)$
+                \STATE $normTotal \gets normTotal + norm(diff[i],2)$
             \ENDFOR
         \ENDFOR
-        \STATE $distance \gets norm\_total {\ } / {\ } total$
+        \STATE $distance \gets normTotal {\ } / {\ } total$
+        \RETURN $distance$
 	\end{algorithmic}  
 \end{algorithm}
 
