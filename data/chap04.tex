@@ -71,7 +71,29 @@
 在训练过程中，记录下每个Epoch的平均损失函数值，通过这些损失函数值就能够得出模型收敛至一定数值时训练的批次数，从而能够评估预选层数及预选层数周边层数的遗忘效果和遗忘效率。
 
 本实验使用的遗忘测试集包含CIFAR10中轮船和卡车的测试数据，保留训练集包含CIFAR10中除了轮船和卡车以外所有的训练数据，保留测试集包含除了轮船和卡车以外所有的测试数据。
-表\ref{tab:forget-continuous-2-kinds}中展示了遗忘类别与保留类别的信息。
+保留训练集、保留测试集、遗忘训练集和遗忘测试集的生成方法如算法\ref{algorithm:dispartDataset}所示。表\ref{tab:forget-continuous-2-kinds}中展示了遗忘类别与保留类别的信息。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{分离数据集方法  dispartDataset}
+	\label{algorithm:dispartDataset}
+	\begin{algorithmic}[1]
+        \REQUIRE 训练集$trainset$,测试集$testset$,遗忘类别$C\_forget$
+        \ENSURE  $train\_retain,train\_forget,test\_retain,test\_forget$
+        \FOR {$i \to trainset.length$}
+            \IF{$trainset[i].label \in C\_forget$}
+                \STATE $ train\_retain.push(trainset[i])$
+            \ELSE
+                \STATE $ train\_forget.push(trainset[i])$
+            \ENDIF
+            \IF{$testset[i].label \in C\_forget$}
+                \STATE $ test\_retain.push(testset[i])$
+            \ELSE
+                \STATE $ test\_forget.push(testset[i])$
+            \ENDIF
+        \ENDFOR
+	\end{algorithmic}  
+\end{algorithm}
 \begin{table}
     \centering
     \caption{确定冻结层数实验遗忘类别和保留类别}
@@ -160,6 +182,33 @@
 准备好了两个网络模型后，就使用保留训练集1到9分别训练两个模型，在完全初始化的网络模型上无需冻结参数，在后6层参数重置的网络模型上，未被重置参数的层数需要在训练过程中冻结参数。
 训练完成后，完全初始化的网络将得到使用9个训练数据集训练出来的模型。同样，在后6层参数重置的网络上也能得到9个使用保留训练集训练出来的模型。
 得到模型后，将模型进行各类指标的测试。到此实验结束。
+其具体的实现如算法\ref{algorithm:continuous_forget}所示。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{持续遗忘算法 continuous\_forget}
+	\label{algorithm:continuous_forget}
+	\begin{algorithmic}[1]
+        \REQUIRE 数据集类别总数$total\_classes$,网络收敛损失函数限值$T\_threshold$
+        \ENSURE  
+        \FOR {$i \to total\_classes.length - 1$}
+            \STATE $forget\_classes \gets []$
+            \FOR {$j \to i$}
+                \STATE $forget\_classes.push(total\_classes[j])$
+            \ENDFOR
+            \STATE $train\_retain,train\_forget,test\_retain,test\_forget \gets dispartDataset(trainset, testset, C\_forget)$
+            \STATE $C\_forget \gets forget\_classes$
+            \STATE $retrain\_model,T\_converge\_retrain \gets trainNet(model\_init, train\_retain, [],$ \\ $ T\_threshold)$
+            \STATE $gen\_model, T\_converge\_gen \gets normal\_freeze\_reset\_inner\_cycle($\\$total\_layers, i, C\_forget,D\_retain\_train,D\_retain\_test, D\_forget\_test,$\\$retrain\_model )$
+            \STATE $acc\_retrain\_retain \gets getAcc(retrain\_model, D\_retain\_test)$
+            \STATE $acc\_retrain\_forget  \gets getAcc(retrain\_model, D\_forget\_test)$
+            \STATE $acc\_forget\_i\_kinds\_retain \gets getAcc(gen\_model, D\_retain\_test)$
+            \STATE $acc\_forget\_i\_kinds\_forget  \gets getAcc(gen\_model, D\_forget\_test)$
+            \STATE $distance\_forget\_i\_kinds\_retain \gets getDistance(gen\_model, model\_retrain,$\\$D\_retain\_test)$
+            \STATE $distance\_forget\_i\_kinds\_forget \gets getDistance(gen\_model, model\_retrain, D\_forget\_test)$
+        \ENDFOR
+	\end{algorithmic}  
+\end{algorithm}
 % 用正常训练集训练神经网络得到模型1，在正常训练集训练之前保留网络参数得到模型0。
 % 用神经网络加载模型1，然后把神经网络全连接层和靠近输出层的5层卷积层的参数重置为模型0的相应层次的参数，得到模型2\_1到模型2\_9。
 % 然后分别用保留集1-保留集9去训练模型，训练过程中冻结除了全连接层和后5层卷积层的参数。得到模型3\_1到模型3\_9。

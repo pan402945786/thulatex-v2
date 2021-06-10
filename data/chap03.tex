@@ -7,228 +7,6 @@
 \section{卷积神经网络介绍}
 
 \subsection{卷积神经网络结构}
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{反向冻结算法-内循环 reverse\_freeze\_reset\_inner\_cycle}
-	\label{algorithm:reverse_freeze_reset_inner_cycle}
-	\begin{algorithmic}[1]
-        \REQUIRE 模型总层数total\_layers,初始化参数层数i,遗忘类别C\_forget,保留测试集D\_retain\_test,遗忘测试集D\_forget\_test
-        \ENSURE  $acc\_reverse\_retain\_i, acc\_reverse\_forget\_i  $
-
-		\STATE $model\_reset\_train\_before\_i \gets mergeModel(model\_init, model\_normal, total\_layers, total\_layers - i)$
-		\STATE $model\_reset\_after\_train\_i \gets$ \\
-         $trainNet(model\_reset\_train\_before\_i , D\_retain\_test, P\_freeze, T\_threshold)$
-		\STATE $acc\_reverse\_retain\_i \gets getAcc(model\_reset\_after\_train\_i, D\_retain\_test)$
-		\STATE $acc\_reverse\_forget\_i  \gets getAcc(model\_reset\_after\_train\_i, D\_forget\_test)$
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{反向冻结算法-外循环 reverse\_reset\_outer\_cycle}
-	\label{algorithm:reverse_reset_outer_cycle}
-	\begin{algorithmic}[1]
-        \REQUIRE 模型总层数total\_layers,遗忘类别C\_forget,保留测试集D\_retain\_test,遗忘测试集D\_forget\_test
-        \ENSURE  
-        \STATE $D\_retain\_train, D\_forget\_train, D\_retain\_test, D\_forget\_test \gets dispartDataset(trainset, testset, C\_forget)$
-        \STATE $model\_init \gets net.save\_model()$
-        \STATE $model\_normal,T\_converge\_normal \gets trainNet(model\_init, trainset, P\_freeze, T\_threshold)$
-        \STATE $model\_retrain,T\_converge\_retrain \gets trainNet(model\_init, D\_retain\_train, [], T\_threshold)$
-        \FOR {$i \to total\_layers$}
-            \STATE $reverse\_reset\_inner\_cycle(total\_layers, i, C\_forget, D\_retain\_test, D\_forget\_test)$
-        \ENDFOR
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{正向冻结算法-内循环 normal\_freeze\_reset\_inner\_cycle}
-	\label{algorithm:normal_freeze_reset_inner_cycle}
-	\begin{algorithmic}[1]
-        \REQUIRE 模型总层数$total\_layers$,初始化参数层数$i$,遗忘类别$C\_forget$,保留训练集$D\_retain\_train$,保留测试集$D\_retain\_test$,遗忘测试集$D\_forget\_test$,对比模型$model\_retrain$
-        \ENSURE  $acc\_normal\_freeze\_retain\_i,acc\_normal\_freeze\_forget\_i,distance\_normal\_freeze\_retain\_i,distance\_normal\_freeze\_forget\_i,T\_converge\_i$
-		\STATE $model\_reset\_train\_before\_i \gets mergeModel(model\_normal, model\_init, total\_layers, i)$
-        \STATE $model\_reset\_after\_train\_i,T\_converge\_i \gets trainNet(model\_reset\_train\_before\_i , D\_retain\_train, P\_freeze, T\_threshold)$
-        \STATE $acc\_reverse\_retain\_i \gets getAcc(model\_reset\_after\_train\_i, D\_retain\_test)$
-        \STATE $acc\_reverse\_forget\_i  \gets getAcc(model\_reset\_after\_train\_i, D\_forget\_test)$
-        \STATE $distance\_normal\_freeze\_retain\_i \gets getDistance(model, model\_retrain, D\_retain\_test)$
-        \STATE $distance\_normal\_freeze\_forget\_i \gets getDistance(model, model\_retrain, D\_forget\_test)$
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{正向冻结算法-外循环 normal\_reset\_outer\_cycle}
-	\label{algorithm:normal_reset_outer_cycle}
-	\begin{algorithmic}[1]
-        \REQUIRE 模型总层数$total\_layers$,遗忘类别$C\_forget$,保留测试集$D\_retain\_test$,遗忘测试集$D\_forget\_test$
-        \ENSURE  
-        \STATE $D\_retain\_train, D\_forget\_train, D\_retain\_test, D\_forget\_test \gets dispartDataset(trainset, testset, C\_forget)$
-        \STATE $model\_init \gets net.save\_model()$
-        \STATE $model\_normal,T\_converge\_normal \gets trainNet(model\_init, trainset, P\_freeze, T\_threshold)$
-        \STATE $model\_retrain,T\_converge\_retrain \gets trainNet(model\_init, D\_retain\_train, [], T\_threshold)$
-        \FOR {$i \to total\_layers$}
-            \STATE $normal\_reset\_inner\_cycle(total\_layers, i, C\_forget, D\_retain\_train, D\_retain\_test, D\_forget\_test)$
-        \ENDFOR
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{持续遗忘算法 continuous\_forget}
-	\label{algorithm:continuous_forget}
-	\begin{algorithmic}[1]
-        \REQUIRE 数据集类别总数$total\_classes$,网络收敛损失函数限值$T\_threshold$
-        \ENSURE  
-        \FOR {$i \to total\_classes.length - 1$}
-            \STATE $forget\_classes \gets []$
-            \FOR {$j \to i$}
-                \STATE $forget\_classes.push(total\_classes[j])$
-            \ENDFOR
-            \STATE $train\_retain,train\_forget,test\_retain,test\_forget \gets dispartDataset(trainset, testset, C\_forget)$
-            \STATE $C\_forget \gets forget\_classes$
-            \STATE $retrain\_model,T\_converge\_retrain \gets trainNet(model\_init, train\_retain, [],$ \\ $ T\_threshold)$
-            \STATE $gen\_model, T\_converge\_gen \gets normal\_freeze\_reset\_inner\_cycle($\\$total\_layers, i, C\_forget,D\_retain\_train,D\_retain\_test, D\_forget\_test,$\\$retrain\_model )$
-            \STATE $acc\_retrain\_retain \gets getAcc(retrain\_model, D\_retain\_test)$
-            \STATE $acc\_retrain\_forget  \gets getAcc(retrain\_model, D\_forget\_test)$
-            \STATE $acc\_forget\_i\_kinds\_retain \gets getAcc(gen\_model, D\_retain\_test)$
-            \STATE $acc\_forget\_i\_kinds\_forget  \gets getAcc(gen\_model, D\_forget\_test)$
-            \STATE $distance\_forget\_i\_kinds\_retain \gets getDistance(gen\_model, model\_retrain,$\\$D\_retain\_test)$
-            \STATE $distance\_forget\_i\_kinds\_forget \gets getDistance(gen\_model, model\_retrain, D\_forget\_test)$
-        \ENDFOR
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{分离数据集方法  dispartDataset}
-	\label{algorithm:dispartDataset}
-	\begin{algorithmic}[1]
-        \REQUIRE 训练集$trainset$,测试集$testset$,遗忘类别$C\_forget$
-        \ENSURE  $train\_retain,train\_forget,test\_retain,test\_forget$
-        \FOR {$i \to trainset.length$}
-            \IF{$trainset[i].label \in C\_forget$}
-                \STATE $ train\_retain.push(trainset[i])$
-            \ELSE
-                \STATE $ train\_forget.push(trainset[i])$
-            \ENDIF
-            \IF{$testset[i].label \in C\_forget$}
-                \STATE $ test\_retain.push(testset[i])$
-            \ELSE
-                \STATE $ test\_forget.push(testset[i])$
-            \ENDIF
-        \ENDFOR
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{记录测试准确率算法  getAcc}
-	\label{algorithm:getAcc}
-	\begin{algorithmic}[1]
-        \REQUIRE 待测模型$model$,保留测试集$D_test$
-        \ENSURE  测试准确率$acc$
-        \STATE $total \gets 0$
-        \STATE $corrects \gets 0$
-        \FOR {$i \to D\_test$}
-            \STATE $images, labels \gets data$
-            \STATE $net.load_model(model)$
-            \STATE $outputs \gets net(images)$
-            \STATE $predict \gets max(outputs.data, index)$
-            \STATE $total \gets total + D_test[i].length$
-            \STATE $corrects \gets corrects + (predict == labels).sum()$
-        \ENDFOR
-        \STATE $acc \gets corrects / total$
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{记录激活距离算法  getDistance}
-	\label{algorithm:getDistance}
-	\begin{algorithmic}[1]
-        \REQUIRE 待测模型$model$,对照模型$model\_cmp$,保留测试集$D\_test$
-        \ENSURE  激活距离$distance$
-        \STATE $norm\_total \gets 0$
-        \STATE $total \gets 0$
-        \FOR {$data in D\_test$}
-            \STATE $total \gets total + data.length$
-            \STATE $images, labels \gets data$
-            \STATE $net.load\_model(model)$
-            \STATE $outputs \gets net(images)$
-            \STATE $probability\_to\_test \gets softmax(outputs)$
-            \STATE $net.load\_model(model\_cmp)$
-            \STATE $outputs\_target \gets net(images)$
-            \STATE $probability\_target \gets softmax(outputs\_target)$
-            \STATE $diff \gets probability\_to\_test - probability\_target $
-            \FOR {$i \to diff.length$}
-                \STATE $norm\_total \gets norm\_total + norm(diff[i],2)$
-            \ENDFOR
-        \ENDFOR
-        \STATE $distance \gets norm\_total \div total$
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{训练网络与记录收敛时间算法  trainNet}
-	\label{algorithm:trainNet}
-	\begin{algorithmic}[1]
-        \REQUIRE 初始模型$model\_init$,训练数据$Dataset$,冻结参数集合$P\_freeze$,收敛时间限值$T\_threshold$
-        \ENSURE  $new\_model,T\_converge $
-        \STATE $EPOCH \gets init\_hyper\_parameter\_value$
-        \STATE $criterion \gets crossEntropyLoss$
-        \STATE $T\_converge \gets null$
-        \STATE $net.load\_model(model\_init)$
-        \FOR {$params in net.params()$}
-            \IF {$params.name \in P\_freeze$}
-                \STATE $params.requires\_grad \gets True$
-            \ENDIF
-        \ENDFOR
-        \FOR {$epoch \to EPOCH$}
-            \STATE $loss\_sum \gets 0$
-            \STATE $dataLength \gets 0$
-            \STATE $inputs, labels \gets data$
-            \STATE $dataLength \gets data.length$
-            \FOR {$data \in Dataset$}
-                \STATE $inputs,labels \gets data$
-                \STATE $outputs \gets net(inputs)$
-                \STATE $loss \gets criterion(outputs, labels)$
-                \STATE $loss.backward()$
-                \STATE $loss\_sum \gets loss + loss.item()$
-            \ENDFOR
-            \IF {$(loss\_sum \div dataLength < T\_threshold) and (T\_converge == null)$}
-                \STATE $T\_converge \gets epoch$
-            \ENDIF
-        \ENDFOR
-        \STATE $new\_model \gets net.save()$
-	\end{algorithmic}  
-\end{algorithm}
-
-\begin{algorithm}
-	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{模型组合算法 mergeModel}
-	\label{algorithm:mergeModel}
-	\begin{algorithmic}[1]
-        \REQUIRE 前部分模型$former\_model$,后部分模型$later\_model$,模型总层数$total\_layers$,前部分模型重置层数$former\_reset\_layer\_count$
-        \ENSURE  $merged\_model$
-        \FOR {$i \to later\_layer\_count$}
-            \STATE $former\_model[total\_layers - i] \gets later\_model[total\_layers - i]$
-        \ENDFOR
-        \STATE $merged\_model \gets former\_model$
-	\end{algorithmic}  
-\end{algorithm}
-
 卷积神经网络和多层感知机的神经网络类似，它们都可以通过像堆积木一样来组装构建。卷积神经网络和多层感知机不同的是卷积网络特有的卷积层（Convolution Layer）和池化层（Pooling Layer）。
 
 % 基于多层感知机的神经网络中，相邻层的各个神经元之间都有连接，这样的结构被称为全连接（Fully-Connected）。
@@ -396,6 +174,68 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 然后，将前面层次的参数初始化成该网络训练之前的对应层次的参数，后面的层次仍然保留原有的参数不变。
 最后，将原来的数据集分成两个部分，第一部分仅包含遗忘类别的训练数据，第二部分仅包含保留类别的训练数据。然后用仅包含保留类别的训练数据重新训练网络，直到网络收敛为止，保存训练后的参数。在训练过程中保持只训练前面的参数，后面的参数不参与训练。
 经过上述步骤以后，我们再将离输入层较近的两层作为前面的层次，其余层次作为后面的层次。再进行上述步骤，直到网络收敛并保存训练后的参数。以此类推，直到前面参数为全部的参数为止，此时后面的参数为空。
+
+具体方法如算法\ref{algorithm:reverseReset}所示。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{反向冻结算法-外循环 reverseReset}
+	\label{algorithm:reverseReset}
+	\begin{algorithmic}[1]
+        \REQUIRE 模型总层数$totalLayers$,遗忘类别$C_{forget}$,全部测试集$D_{all\_train}$,全部测试集$D_{all\_test}$,初始网络模型$net$
+        \ENSURE  重置各层的准确率$accRetainArray$和$accForgetArray$
+        \STATE $accRetainArray \gets []$
+        \STATE $accForgetArray \gets []$
+        \STATE $D_{retain\_train}, D_{forget\_train}, D_{retain\_test}, D_{forget\_test} \gets dispartDataset(D_{all\_train}, D_{all\_test}, C_{forget})$ (算法\ref{algorithm:dispartDataset})
+        \STATE $modelInit \gets net.saveModel()$
+        \STATE $modelNormal,\_ \gets trainNet(modelInit, trainset, P_{freeze}, T_{threshold})$ (算法\ref{algorithm:trainNet})
+        \STATE $modelRetrain,\_ \gets trainNet(modelInit, D_{retain\_train}, [], T_{threshold})$ (算法\ref{algorithm:trainNet})
+        \FOR {$i \to totalLayers$}
+            % \STATE $accRetain,accForget \gets reverseResetInnerCycle(totalLayers, i, C_{forget}, $\\$D_{retain\_test}, D_{forget\_test}, modelNormal, modelInit)$ (算法\ref{algorithm:reverseResetInnerCycle})
+            \STATE $modelResetBeforeTrain\_i \gets mergeModel(modelInit, modelNormal, totalLayers, totalLayers - i)$  (算法\ref{algorithm:mergeModel})
+            \STATE $modelResetAfterTrain\_i \gets$ $trainNet(modelResetBeforeTrain\_i , D_{retain\_test}, P_{freeze}, T_{threshold})$  (算法\ref{algorithm:trainNet})
+            \STATE $accRetain \gets getAcc(modelResetAfterTrain\_i, D_{retain\_test})$ (算法\ref{algorithm:getAcc})
+            \STATE $accForget \gets getAcc(modelResetAfterTrain\_i, D_{forget\_test})$(算法\ref{algorithm:getAcc})
+            \STATE $accRetainArray.push(accRetain)$
+            \STATE $accForgetArray.push(accForget)$
+        \ENDFOR
+        \RETURN $accRetainArray, accForgetArray$
+	\end{algorithmic}  
+\end{algorithm}
+% \begin{algorithm}
+% 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+% 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+% 	\caption{反向冻结算法-内循环 reverseResetInnerCycle}
+% 	\label{algorithm:reverseResetInnerCycle}
+% 	\begin{algorithmic}[1]
+%         \REQUIRE 模型总层数$totalLayers$,初始化参数层数$i$,遗忘类别$C_{forget}$,保留测试集$D_{retain\_test}$,遗忘测试集$D_{forget\_test}$,训练完成模型$modelNormal$,初始化模型$modelInit$
+%         \ENSURE  $accReverseRetain\_i, accReverseForget\_i  $
+
+% 		\STATE $modelResetBeforeTrain\_i \gets mergeModel(modelInit, modelNormal, totalLayers, totalLayers - i)$
+% 		\STATE $modelResetAfterTrain\_i \gets$ \\
+%          $trainNet(modelResetBeforeTrain\_i , D_{retain\_test}, P_{freeze}, T_{threshold})$ 
+% 		\STATE $accReverseRetain\_i \gets getAcc(modelResetAfterTrain\_i, D_{retain\_test})$
+% 		\STATE $accReverseForget\_i  \gets getAcc(modelResetAfterTrain\_i, D_{forget\_test})$
+% 	\end{algorithmic}  
+% \end{algorithm}
+
+生成模型的具体方法如算法\ref{algorithm:mergeModel}所示。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{模型组合算法 mergeModel}
+	\label{algorithm:mergeModel}
+	\begin{algorithmic}[1]
+        \REQUIRE 前部分重置的模型$formerModel$,后部分重置的模型$laterModel$,模型总层数$totalLayers$,后部分重置的层数$resetLayerCount$
+        \ENSURE  $mergedModel$
+        \FOR {$i \to resetLayerCount$}
+            \STATE $formerModel[totalLayers - i] \gets laterModel[totalLayers - i]$
+        \ENDFOR
+        \STATE $mergedModel \gets formerModel$
+        \RETURN $mergedModel$
+	\end{algorithmic}  
+\end{algorithm}
+
 经过上述过程之后，我们将得到和网络层数相同的训练好的模型。然后分别测量这些网络在遗忘测试数据集上的准确率，然后绘制准确率曲线。绘制的准确率曲线大致趋势如图\ref{fig:chapter3_reverse_freeze_2}所示。
 \begin{figure}
     \centering
@@ -417,6 +257,47 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
     \caption{正向重置冻结训练方法示意图}
     \label{fig:chapter3_reset_freeze}
 \end{figure}
+其具体过程如算法\ref{algorithm:normalResetMain}所示。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{正向冻结算法-外循环 normalResetMain}
+	\label{algorithm:normalResetMain}
+	\begin{algorithmic}[1]
+        \REQUIRE 模型总层数$totalLayers$,遗忘类别$C_{forget}$,全部测试集$D_{all\_train}$,全部测试集$D_{all\_test}$,初始网络模型$net$
+        \ENSURE  $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge\_i}Arr$
+        \STATE $D_{retain\_train}, D_{forget\_train}, D_{retain\_test}, D_{forget\_test} \gets dispartDataset(D_{all\_train}, D_{all\_test}, C_{forget})$(算法\ref{algorithm:dispartDataset})
+        \STATE $modelInit \gets net.saveModel()$
+        \STATE $modelNormal,\_ \gets trainNet(modelInit, trainset, P_{freeze}, T_{threshold})$(算法\ref{algorithm:trainNet})
+        \STATE $modelRetrain,\_ \gets trainNet(modelInit, D_{retain\_train}, [], T_{threshold})$(算法\ref{algorithm:trainNet})
+        \FOR {$i \to totalLayers$}
+            \STATE $accNormalFreezeRetain\_i,accNormalFreezeForget\_i,$\\
+            $distanceNormalFreezeRetain\_i,distanceNormalFreezeForget\_i,T_{converge\_i} \gets normalFreezeResetInnerCycle(totalLayers, i, C_{forget}, D_{retain\_train}, D_{retain\_test}, D_{forget\_test}, $\\$modelRetrain)$(算法\ref{algorithm:normalFreezeResetInnerCycle})
+            \STATE $accNormalFreezeRetainArr.push(accNormalFreezeRetain\_i)$
+            \STATE $accNormalFreezeForgetArr.push(accNormalFreezeForget\_i)$
+            \STATE $distanceNormalFreezeRetainArr.push(distanceNormalFreezeRetain\_i)$
+            \STATE $distanceNormalFreezeForgetArr.push(distanceNormalFreezeForget\_i)$
+            \STATE $T_{converge\_i}Arr.push(T_{converge\_i})$
+            \ENDFOR
+	\end{algorithmic}  
+\end{algorithm}
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{正向冻结算法-内循环 normalFreezeResetInnerCycle}
+	\label{algorithm:normalFreezeResetInnerCycle}
+	\begin{algorithmic}[1]
+        \REQUIRE 模型总层数$totalLayers$,初始化参数层数$i$,遗忘类别$C_{forget}$,保留训练集$D_{retain\_train}$,保留测试集$D_{retain\_test}$,遗忘测试集$D_{forget\_test}$,对比模型$modelCmp$
+        \ENSURE  $accNormalFreezeRetain\_i,accNormalFreezeForget\_i,$\\$distanceNormalFreezeRetain\_i,distanceNormalFreezeForget\_i,T_{converge\_i}$
+		\STATE $modelResetBeforeTrain\_i \gets mergeModel(modelNormal, modelInit, totalLayers, i)$(算法\ref{algorithm:mergeModel})
+        \STATE $modelResetAfterTrain\_i,T_{converge\_i} \gets trainNet(modelResetBeforeTrain\_i , D_{retain\_train},$\\$ P_{freeze}, T_{threshold})$(算法\ref{algorithm:mergeModel})
+        \STATE $accNormalFreezeRetain\_i \gets getAcc(modelResetAfterTrain\_i, D_{retain\_test})$(算法\ref{algorithm:getAcc})
+        \STATE $accNormalFreezeForget\_i  \gets getAcc(modelResetAfterTrain\_i, D_{forget\_test})$(算法\ref{algorithm:getAcc})
+        \STATE $distanceNormalFreezeRetain\_i \gets getDistance(model, modelCmp, D_{retain\_test})$(算法\ref{algorithm:getDistance})
+        \STATE $distanceNormalFreezeForget\_i \gets getDistance(model, modelCmp, D_{forget\_test})$(算法\ref{algorithm:getDistance})
+	\end{algorithmic}  
+\end{algorithm}
+
 训练好模型后，我们将得到和参数层数数量相同的模型。分别测试这些模型的相应指标：首先是准确率。准确率分为两大类，一类是只使用遗忘数据集测试的遗忘测试准确率，另一类则是只使用保留数据集测得的保留测试准确率。
 选择这个指标是出于实际应用的考虑。因为我们训练神经网络模型的目的是用于分类，所以一个最基本的要求就是要在保留的数据集上有较高的分类准确率，在遗忘的数据集上要有和重新训练的模型类似的准确率。
 其次是重新训练时间，这也是十分重要的指标。重新训练时间如果长于完全重新训练的时间，那么本方法就没有了存在的价值。
@@ -455,7 +336,28 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 \subsection{测试准确率}
 训练神经网络的过程中，我们不仅要利用训练数据去训练网络，也需要用测试集去测试训练网络的泛化成果，目的是为了检测训练的网络是否出现过拟合情况。我们将测试集根据遗忘需求分为两个部分，仅有遗忘类别的遗忘测试集和仅有保留类别的保留测试集。
 使用遗忘测试集的测试结果可以反映网络对于遗忘类别的遗忘程度。单从测试准确率这一个指标上来看，使用本文方法遗忘后的网络与完全重新训练后的网络在遗忘测试集的准确率上越接近，遗忘的效果就越好。
-同理，使用保留测试集的测试结果可以反映网络对于保留类别的保留情况。单从测试准确率这个指标上来看，在保留测试集上的准确率越高，代表保留类别的保留效果越明显。
+同理，使用保留测试集的测试结果可以反映网络对于保留类别的保留情况。单从测试准确率这个指标上来看，在保留测试集上的准确率越高，代表保留类别的保留效果越明显。获取准确率具体方法如算法\ref{algorithm:getAcc}所示。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{记录测试准确率算法  getAcc}
+	\label{algorithm:getAcc}
+	\begin{algorithmic}[1]
+        \REQUIRE 待测模型$model$,保留测试集$D\_test$
+        \ENSURE  测试准确率$acc$
+        \STATE $total \gets 0$
+        \STATE $corrects \gets 0$
+        \FOR {$i \to D\_test$}
+            \STATE $images, labels \gets D\_test[i]$
+            \STATE $net.load\_model(model)$
+            \STATE $outputs \gets net(images)$
+            \STATE $predict \gets max(outputs.data, index)$
+            \STATE $total \gets total + D\_test[i].length$
+            \STATE $corrects \gets corrects + (predict == labels).sum()$
+        \ENDFOR
+        \STATE $acc \gets corrects \div total$
+	\end{algorithmic}  
+\end{algorithm}
 
 \subsection{收敛时间}
 收敛时间用于衡量本文遗忘方法在时间上的节约程度。规定从用保留集进行训练开始，到当前训练批次损失函数输出的平均值小于一定限值为止，这中间过程的训练批次数称为收敛时间。
@@ -466,12 +368,77 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 为了便于实验结果的对比，我们给收敛时间确定了一个计算公式。我们将收敛时间定义为网络训练过程中，本轮Epoch中平均的损失函数值首次下降到指定阈值时所花费的Epoch数。在本文的实验中取了三个阈值，分别是0.1，0.05和0.03。
 
 将从保留集开始训练的时刻作为起始时间是因为确定分层步骤是一次性的步骤，对于同一个网络结构，确定网络分层仅在第一次遗忘时确定一次，以后遗忘时沿用上次的网络分层即可。
+获取收敛时间以及训练网络具体方法如算法\ref{algorithm:trainNet}所示。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{训练网络与记录收敛时间算法  trainNet}
+	\label{algorithm:trainNet}
+	\begin{algorithmic}[1]
+        \REQUIRE 初始模型$modelInit$,训练数据$Dataset$,冻结参数集合$P_{freeze}$,收敛时间限值$T_{threshold}$
+        \ENSURE  $new\_model,T\_converge $
+        \STATE $EPOCH \gets init\_hyper\_parameter\_value$
+        \STATE $criterion \gets crossEntropyLoss$
+        \STATE $T\_converge \gets null$
+        \STATE $net.load\_model(modelInit)$
+        \FOR {$params in net.params()$}
+            \IF {$params.name \in P_{freeze}$}
+                \STATE $params.requires\_grad \gets True$
+            \ENDIF
+        \ENDFOR
+        \FOR {$epoch \to EPOCH$}
+            \STATE $loss\_sum \gets 0$
+            \STATE $dataLength \gets 0$
+            \STATE $inputs, labels \gets data$
+            \STATE $dataLength \gets data.length$
+            \FOR {$data \in Dataset$}
+                \STATE $inputs,labels \gets data$
+                \STATE $outputs \gets net(inputs)$
+                \STATE $loss \gets criterion(outputs, labels)$
+                \STATE $loss.backward()$
+                \STATE $loss\_sum \gets loss + loss.item()$
+            \ENDFOR
+            \IF {$(loss\_sum \div dataLength < T_{threshold}) and (T\_converge == null)$}
+                \STATE $T\_converge \gets epoch$
+            \ENDIF
+        \ENDFOR
+        \STATE $new\_model \gets net.save()$
+	\end{algorithmic}  
+\end{algorithm}
 
 \subsection{激活距离}
 激活距离是指遗忘后模型与完全重新训练模型在测试集上的平均距离。它用于衡量遗忘后模型与完全重新训练模型在网络输出结果上的相似程度。它的计算公式是
 \begin{equation}
 I_{distance} = {\mathbb{E}}_{x\in {\mathcal{D}_{test}}}[{\Vert softmax(f_w(x)) - softmax(f_{w_{\mathcal{D}_R}}) \Vert}_2 ] \label{index_distance}
 \end{equation}
+具体计算方法如算法\ref{algorithm:getDistance}所示。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{记录激活距离算法  getDistance}
+	\label{algorithm:getDistance}
+	\begin{algorithmic}[1]
+        \REQUIRE 待测模型$model$,对照模型$model\_cmp$,保留测试集$D\_test$
+        \ENSURE  激活距离$distance$
+        \STATE $norm\_total \gets 0$
+        \STATE $total \gets 0$
+        \FOR {$data in D\_test$}
+            \STATE $total \gets total + data.length$
+            \STATE $images, labels \gets data$
+            \STATE $net.load\_model(model)$
+            \STATE $outputs \gets net(images)$
+            \STATE $probability\_to\_test \gets softmax(outputs)$
+            \STATE $net.load\_model(model\_cmp)$
+            \STATE $outputs\_target \gets net(images)$
+            \STATE $probability\_target \gets softmax(outputs\_target)$
+            \STATE $diff \gets probability\_to\_test - probability\_target $
+            \FOR {$i \to diff.length$}
+                \STATE $norm\_total \gets norm\_total + norm(diff[i],2)$
+            \ENDFOR
+        \ENDFOR
+        \STATE $distance \gets norm\_total \div total$
+	\end{algorithmic}  
+\end{algorithm}
 
 $f_w(x)$代表完全重新训练网络的输出结果，$f_{w_{\mathcal{D}_R}}$代表使用本文遗忘方法训练网络的输出结果。
 两个模型输出结果Softmax函数输出的差值向量的第二范数在测试集上的期望就是激活距离。
