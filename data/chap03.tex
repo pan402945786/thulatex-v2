@@ -175,31 +175,41 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 最后，将原来的数据集分成两个部分，第一部分仅包含遗忘类别的训练数据，第二部分仅包含保留类别的训练数据。然后用仅包含保留类别的训练数据重新训练网络，直到网络收敛为止，保存训练后的参数。在训练过程中保持只训练前面的参数，后面的参数不参与训练。
 经过上述步骤以后，我们再将离输入层较近的两层作为前面的层次，其余层次作为后面的层次。再进行上述步骤，直到网络收敛并保存训练后的参数。以此类推，直到前面参数为全部的参数为止，此时后面的参数为空。
 
-具体方法如算法\ref{algorithm:reverseReset}所示。
+具体方法如算法\ref{algorithm:reverseReset}所示。算法的输入有网络模型的总层数、要遗忘类别的集合、包含所有类别的训练集和测试集。算法最终输出生成模型分别在保留集和遗忘集上准确率的集合。
+前两个步骤的作用是初始化神经网络模型并且保存初始化参数，以备后续重置参数时使用。3到4行初始化了两个数组，分别是用于保存保留测试集准确率的数组和用于保存遗忘测试集准确率的数组。
+第5行是根据算法\ref{algorithm:dispartDataset}将所有的训练集和所有的测试集根据遗忘的类别分别分成两个部分，一部分只包含遗忘类别的数据，另一部分只包含保留类别的数据。
+对于训练集，这两个部分分别称作保留训练集（$D_{retain\_train}$）、遗忘训练集（$D_{forget\_train}$）；对于测试集，这两个部分分别称为保留测试集（$D_{retain\_test}$）、遗忘测试集（$D_{forget\_test}$）。
+
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{反向冻结算法-外循环 reverseReset}
+	\caption{反向冻结算法 reverseReset}
 	\label{algorithm:reverseReset}
 	\begin{algorithmic}[1]
-        \REQUIRE 模型总层数$totalLayers$,遗忘类别$C_{forget}$,全部测试集$D_{all\_train}$,全部测试集$D_{all\_test}$,初始网络模型$net$
-        \ENSURE  重置各层的准确率$accRetainArray$和$accForgetArray$
-        \STATE $accRetainArray \gets []$
-        \STATE $accForgetArray \gets []$
-        \STATE $D_{retain\_train}, D_{forget\_train}, D_{retain\_test}, D_{forget\_test} \gets dispartDataset(D_{all\_train}, D_{all\_test}, C_{forget})$ (算法\ref{algorithm:dispartDataset})
+        \REQUIRE 模型总层数$totalLayers$,遗忘类别$C_{forget}$,全部训练集$D_{all\_train}$,全部测试集$D_{all\_test}$
+        \ENSURE  重置各层的准确率$accRetainArr$和$accForgetArr$
+        \STATE $net \gets Initial\ Network$
         \STATE $modelInit \gets net.saveModel()$
-        \STATE $modelNormal,\_ \gets trainNet(modelInit, trainset, P_{freeze}, T_{threshold})$ (算法\ref{algorithm:trainNet})
+        \STATE $accRetainArr \gets []$
+        \STATE $accForgetArr \gets []$
+        \STATE $D_{retain\_train}, D_{forget\_train}, D_{retain\_test}, D_{forget\_test} \gets dispartDataset(D_{all\_train}, D_{all\_test}, C_{forget})$ (算法\ref{algorithm:dispartDataset})
+        \STATE $modelNormal,\_ \gets trainNet(modelInit, trainset, [], T_{threshold})$ (算法\ref{algorithm:trainNet})
         \STATE $modelRetrain,\_ \gets trainNet(modelInit, D_{retain\_train}, [], T_{threshold})$ (算法\ref{algorithm:trainNet})
+        \STATE $P_{freeze} \gets []$
         \FOR {$i \to totalLayers$}
-            % \STATE $accRetain,accForget \gets reverseResetInnerCycle(totalLayers, i, C_{forget}, $\\$D_{retain\_test}, D_{forget\_test}, modelNormal, modelInit)$ (算法\ref{algorithm:reverseResetInnerCycle})
+            \FOR {$j \to net.params.length$}
+                \IF {$net.params[j].layer \leq i$}
+                    \STATE $P_{freeze}.push(net.params[j].name)$
+                \ENDIF
+            \ENDFOR
             \STATE $modelResetBeforeTrain\_i \gets mergeModel(modelInit, modelNormal, totalLayers, totalLayers - i)$  (算法\ref{algorithm:mergeModel})
             \STATE $modelResetAfterTrain\_i \gets$ $trainNet(modelResetBeforeTrain\_i , D_{retain\_test}, P_{freeze}, T_{threshold})$  (算法\ref{algorithm:trainNet})
             \STATE $accRetain \gets getAcc(modelResetAfterTrain\_i, D_{retain\_test})$ (算法\ref{algorithm:getAcc})
             \STATE $accForget \gets getAcc(modelResetAfterTrain\_i, D_{forget\_test})$(算法\ref{algorithm:getAcc})
-            \STATE $accRetainArray.push(accRetain)$
-            \STATE $accForgetArray.push(accForget)$
+            \STATE $accRetainArr.push(accRetain)$
+            \STATE $accForgetArr.push(accForget)$
         \ENDFOR
-        \RETURN $accRetainArray, accForgetArray$
+        \RETURN $accRetainArr, accForgetArr$
 	\end{algorithmic}  
 \end{algorithm}
 % \begin{algorithm}
@@ -265,7 +275,8 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 	\label{algorithm:normalResetMain}
 	\begin{algorithmic}[1]
         \REQUIRE 模型总层数$totalLayers$,遗忘类别$C_{forget}$,全部测试集$D_{all\_train}$,全部测试集$D_{all\_test}$,初始网络模型$net$
-        \ENSURE  $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge\_i}Arr$
+        \ENSURE  $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{convergeArr}$
+        \STATE $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{convergeArr} = []$
         \STATE $D_{retain\_train}, D_{forget\_train}, D_{retain\_test}, D_{forget\_test} \gets dispartDataset(D_{all\_train}, D_{all\_test}, C_{forget})$(算法\ref{algorithm:dispartDataset})
         \STATE $modelInit \gets net.saveModel()$
         \STATE $modelNormal,\_ \gets trainNet(modelInit, trainset, P_{freeze}, T_{threshold})$(算法\ref{algorithm:trainNet})
@@ -277,8 +288,9 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
             \STATE $accNormalFreezeForgetArr.push(accNormalFreezeForget\_i)$
             \STATE $distanceNormalFreezeRetainArr.push(distanceNormalFreezeRetain\_i)$
             \STATE $distanceNormalFreezeForgetArr.push(distanceNormalFreezeForget\_i)$
-            \STATE $T_{converge\_i}Arr.push(T_{converge\_i})$
-            \ENDFOR
+            \STATE $T_{convergeArr}.push(T_{converge\_i})$
+        \ENDFOR
+        \RETURN $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{convergeArr}$
 	\end{algorithmic}  
 \end{algorithm}
 \begin{algorithm}
@@ -290,11 +302,12 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
         \REQUIRE 模型总层数$totalLayers$,初始化参数层数$i$,遗忘类别$C_{forget}$,保留训练集$D_{retain\_train}$,保留测试集$D_{retain\_test}$,遗忘测试集$D_{forget\_test}$,对比模型$modelCmp$
         \ENSURE  $accNormalFreezeRetain\_i,accNormalFreezeForget\_i,$\\$distanceNormalFreezeRetain\_i,distanceNormalFreezeForget\_i,T_{converge\_i}$
 		\STATE $modelResetBeforeTrain\_i \gets mergeModel(modelNormal, modelInit, totalLayers, i)$(算法\ref{algorithm:mergeModel})
-        \STATE $modelResetAfterTrain\_i,T_{converge\_i} \gets trainNet(modelResetBeforeTrain\_i , D_{retain\_train},$\\$ P_{freeze}, T_{threshold})$(算法\ref{algorithm:mergeModel})
+        \STATE $modelResetAfterTrain\_i,T_{converge\_i} \gets trainNet(modelResetBeforeTrain\_i , D_{retain\_train},$\\$ P_{freeze}, T_{threshold})$(算法\ref{algorithm:trainNet})
         \STATE $accNormalFreezeRetain\_i \gets getAcc(modelResetAfterTrain\_i, D_{retain\_test})$(算法\ref{algorithm:getAcc})
         \STATE $accNormalFreezeForget\_i  \gets getAcc(modelResetAfterTrain\_i, D_{forget\_test})$(算法\ref{algorithm:getAcc})
         \STATE $distanceNormalFreezeRetain\_i \gets getDistance(model, modelCmp, D_{retain\_test})$(算法\ref{algorithm:getDistance})
         \STATE $distanceNormalFreezeForget\_i \gets getDistance(model, modelCmp, D_{forget\_test})$(算法\ref{algorithm:getDistance})
+        \RETURN $accNormalFreezeRetain\_i,accNormalFreezeForget\_i,$\\$distanceNormalFreezeRetain\_i,distanceNormalFreezeForget\_i,T_{converge\_i}$
 	\end{algorithmic}  
 \end{algorithm}
 

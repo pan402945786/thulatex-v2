@@ -132,6 +132,38 @@
     \caption{ResNet18不冻结参数训练示意图}
     \label{fig:chapter4_resnet_no_freezing_1}
 \end{figure}
+
+具体方法如算法\ref{algorithm:noFreezingResetMain}所示。
+\begin{algorithm}
+	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+	\renewcommand{\algorithmicensure}{\textbf{Output:}}
+	\caption{冻结必要性验证实验算法 noFreezingResetMain}
+	\label{algorithm:noFreezingResetMain}
+	\begin{algorithmic}[1]
+        \REQUIRE 模型总层数$totalLayers$,遗忘类别$C_{forget}$,全部测试集$D_{all\_train}$,全部测试集$D_{all\_test}$,初始网络模型$net$
+        \ENSURE  $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge\_i}Arr$
+        \STATE $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge\_i}Arr = []$
+        \STATE $D_{retain\_train}, D_{forget\_train}, D_{retain\_test}, D_{forget\_test} \gets dispartDataset(D_{all\_train}, D_{all\_test}, C_{forget})$(算法\ref{algorithm:dispartDataset})
+        \STATE $modelInit \gets net.saveModel()$
+        \STATE $modelNormal,\_ \gets trainNet(modelInit, trainset, P_{freeze}, T_{threshold})$(算法\ref{algorithm:trainNet})
+        \STATE $modelRetrain,\_ \gets trainNet(modelInit, D_{retain\_train}, [], T_{threshold})$(算法\ref{algorithm:trainNet})
+        \FOR {$i \to totalLayers$}
+            \STATE $modelResetBeforeTrain\_i \gets mergeModel(modelNormal, modelInit, totalLayers, i)$(算法\ref{algorithm:mergeModel})
+            \STATE $modelResetAfterTrain\_i,T_{converge\_i} \gets trainNet(modelResetBeforeTrain\_i , D_{retain\_train},$\\$ [], T_{threshold})$(算法\ref{algorithm:trainNet})
+            \STATE $accNormalFreezeRetain\_i \gets getAcc(modelResetAfterTrain\_i, D_{retain\_test})$(算法\ref{algorithm:getAcc})
+            \STATE $accNormalFreezeForget\_i  \gets getAcc(modelResetAfterTrain\_i, D_{forget\_test})$(算法\ref{algorithm:getAcc})
+            \STATE $distanceNormalFreezeRetain\_i \gets getDistance(model, modelCmp, D_{retain\_test})$(算法\ref{algorithm:getDistance})
+            \STATE $distanceNormalFreezeForget\_i \gets getDistance(model, modelCmp, D_{forget\_test})$(算法\ref{algorithm:getDistance})
+            \STATE $accNormalFreezeRetainArr.push(accNormalFreezeRetain\_i)$
+            \STATE $accNormalFreezeForgetArr.push(accNormalFreezeForget\_i)$
+            \STATE $distanceNormalFreezeRetainArr.push(distanceNormalFreezeRetain\_i)$
+            \STATE $distanceNormalFreezeForgetArr.push(distanceNormalFreezeForget\_i)$
+            \STATE $T_{converge\_i}Arr.push(T_{converge\_i})$
+        \ENDFOR
+        \RETURN $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge\_i}Arr$
+	\end{algorithmic}  
+\end{algorithm}
+
 % 如图\ref{fig:chapter4_process_2}所示。
 % 我们首先使用正常训练集去训练神经网络，直至训练集准确率收敛，获得模型1。在训练网络之前保存神经网络训练的初始参数，记为模型0。
 % 将模型1的最后一层的参数替换为模型0的最后一层参数，模型1其余层数的参数保持不变，由此得到模型2\_1。
@@ -187,7 +219,7 @@
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{持续遗忘算法 continuousForget}
+	\caption{遗忘可持续性验证实验算法 continuousForget}
 	\label{algorithm:continuousForget}
 	\begin{algorithmic}[1]
         \REQUIRE 数据集所有类别$totalClasses$,网络收敛损失函数限值$T_{threshold}$
