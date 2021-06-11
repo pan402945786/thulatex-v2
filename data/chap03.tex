@@ -268,7 +268,9 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 首先要初始化神经网络模型和用于最终返回的数据结构。
 第3行根据算法\ref{algorithm:dispartDataset}将包含所有类别的训练集和测试集进行拆分，拆分的根据是遗忘类别的数组$C_{forget}$，分别得到保留训练集（$D_{retain\_train}$）、保留测试集（$D_{retain\_test}$）、遗忘训练集（$D_{forget\_train}$）、遗忘测试集（$D_{forget\_test}$）。
 然后将初始化的模型保存成$modelInit$，用于后续重置参数时使用。第5行根据算法\ref{algorithm:trainNet}使用包含所有类别的训练集训练出来一个正常的模型$modelNormal$。第6行根据算法\ref{algorithm:trainNet}使用保留训练集训练出一个对照模型$modelRetrain$。
-
+第7行到第14行时算法的主体部分，完成了模型的重组和网络的训练。对于每一个层次执行一次实验，循环变量$i$代表当前迭代的层次。
+第8行算法进入算法的内循环部分，函数$𝑛𝑜𝑟𝑚𝑎𝑙𝐹𝑟𝑒𝑒𝑧𝑒𝑅𝑒𝑠𝑒𝑡𝐼𝑛𝑛𝑒𝑟𝐶𝑦𝑐𝑙𝑒$将返回每个层次的测试准确率$accNormalFreezeForget\_i$和$accNormalFreezeRetain\_i$和激活距离$distanceNormalFreezeForget\_i$和$distanceNormalFreezeRetain\_i$，此外还有网络训练的收敛时间$T_{converge\_i}$。
+第9行至第13行用于保存每轮实验所产生的指标数据。至此正向冻结重置方法的主方法部分结束。
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
@@ -295,13 +297,17 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
         \RETURN $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{convergeArr}$
 	\end{algorithmic}  
 \end{algorithm}
+
+函数$normalFreezeResetInnerCycle$是正向冻结方法中的内循环。该算法需要输入模型总层数、需要重置参数的层数、遗忘类别的集合、保留训练集、保留测试集、遗忘测试集还有用于对比激活距离的模型。
+算法最终输出重置$i$层参数时，遗忘后的网络分别在保留测试集和遗忘测试集上的准确率（$accNormalFreezeRetain\_i$、$accNormalFreezeForget\_i$）和激活距离（$distanceNormalFreezeRetain\_i$、$,distanceNormalFreezeForget\_i$），还有网络训练的收敛时间$T_{converge\_i}$。
+首先要重置参数，生成混合后的模型。
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
 	\caption{正向冻结算法-内循环 normalFreezeResetInnerCycle}
 	\label{algorithm:normalFreezeResetInnerCycle}
 	\begin{algorithmic}[1]
-        \REQUIRE 模型总层数$totalLayers$,初始化参数层数$i$,遗忘类别$C_{forget}$,保留训练集$D_{retain\_train}$,保留测试集$D_{retain\_test}$,遗忘测试集$D_{forget\_test}$,对比模型$modelCmp$
+        \REQUIRE 模型总层数$totalLayers$,初始化参数层数$i$,遗忘类别$C_{forget}$,保留训练集$D_{retain\_train}$,保留测试集$D_{retain\_test}$,遗忘测试集$D_{forget\_test}$,对比模型$modelCmp$,初始模型$modelInit$,正常训练后模型$modelNormal$
         \ENSURE  $accNormalFreezeRetain\_i,accNormalFreezeForget\_i,$\\$distanceNormalFreezeRetain\_i,distanceNormalFreezeForget\_i,T_{converge\_i}$
 		\STATE $modelResetBeforeTrain\_i \gets mergeModel(modelNormal, modelInit, totalLayers, i)$(算法\ref{algorithm:mergeModel})
         \STATE $modelResetAfterTrain\_i,T_{converge\_i} \gets trainNet(modelResetBeforeTrain\_i , D_{retain\_train},$\\$ P_{freeze}, T_{threshold})$(算法\ref{algorithm:trainNet})
