@@ -75,26 +75,34 @@
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
-	\caption{分离数据集方法  dispartDataset}
+	\caption{分离数据集算法  dispartDataset}
 	\label{algorithm:dispartDataset}
 	\begin{algorithmic}[1]
         \REQUIRE 训练集$trainset$,测试集$testset$,遗忘类别$C_{forget}$
         \ENSURE  $trainRetain,trainForget,testRetain,testForget$
         \FOR {$i \to trainset.length$}
             \IF{$trainset[i].label \in C_{forget}$}
-                \STATE $ trainRetain.push(trainset[i])$
-            \ELSE
                 \STATE $ trainForget.push(trainset[i])$
-            \ENDIF
-            \IF{$testset[i].label \in C_{forget}$}
-                \STATE $ testRetain.push(testset[i])$
             \ELSE
+                \STATE $ trainRetain.push(trainset[i])$
+            \ENDIF
+        \ENDFOR
+        \FOR {$i \to testset.length$}
+            \IF{$testset[i].label \in C_{forget}$}
                 \STATE $ testForget.push(testset[i])$
+            \ELSE
+                \STATE $ testRetain.push(testset[i])$
             \ENDIF
         \ENDFOR
         \RETURN $trainRetain,trainForget,testRetain,testForget$
 	\end{algorithmic}  
 \end{algorithm}
+分离数据集算法需要输入数据训练数据集和测试数据集，还有遗忘的类别$C_{forget}$。
+该算法根据遗忘类别输出只包含遗忘类别的遗忘训练集和测试训练集，还有不包含遗忘类别的保留训练集和保留测试集。
+算法可以分为两个部分，前一部分（第1行到第7行）是训练数据集的分割。遍历训练数据集，如果检查到训练数据的标签属于遗忘类别，则把此训练数据放入到遗忘训练集中；反之，则把此训练数据放入到保留训练集中。
+第二部分（第8行到第14行）是测试数据集的分割。遍历测试数据集，如果发现测试数据集的标签属于遗忘类别，则把该测试数据放入到遗忘测试集中；反之，则把此训练数据放入到保留测试集中。
+将训练集和测试集分割完成后，算法结束。
+
 \begin{table}
     \centering
     \caption{确定冻结层数实验遗忘类别和保留类别}
@@ -133,34 +141,45 @@
     \label{fig:chapter4_resnet_no_freezing_1}
 \end{figure}
 
-具体方法如算法\ref{algorithm:noFreezingResetMain}所示。
+具体方法如算法\ref{algorithm:noFreezingResetMain}所示。首先进行网络初始化，再将用于保存返回结果的变量进行初始化。
+第3行对训练集和测试集根据遗忘类别进行数据集分割，得到保留训练集、保留测试集、遗忘训练集和遗忘测试集。
+第4行用来保存初始化网络的参数。第5行使用全部的训练集进行正常的网络训练，得到正常训练的网络模型$modelNormal$。
+第5行只使用保留训练集进行网络训练，最后得到仅能识别保留类别的神经网络$modelRetrain$。
+从第7行开始至算法最后，将逐轮进行网络训练，每一轮增加一层重置参数，以观察训练结束后网络的各个指标与重置参数层数的关系。
+第8行用于生成混合模型$modelResetBeforeTrain$。正常训练的模型位于混合模型的前面，初始化的模型位于混合模型的后面，目的是为了重置正常训练模型后面的参数。生成模型的参数根据每轮的迭代变量$i$确定。
+混合模型$modelResetBeforeTrain$使用保留训练集$D_{retain\_train}$进行训练。冻结参数的集合为空，意味着训练模型不进行冻结参数。每轮迭代最终损失函数均值达到收敛限值$T_{threshold}$时网络训练停止。
+训练完成后得到模型$modelResetAfterTrain$。第10行至第11行，利用保留测试集和遗忘测试集分别对模型$modelResetAfterTrain$进行准确率测试。
+类似的，第12行至第13行将模型$modelResetAfterTrain$与模型$modelRetrain$进行准确率的比较。
+第14行至第18行用于保存上面每轮的测试结果。至此算法结束。
+
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
 	\caption{冻结必要性验证实验算法 noFreezingResetMain}
 	\label{algorithm:noFreezingResetMain}
 	\begin{algorithmic}[1]
-        \REQUIRE 模型总层数$totalLayers$,遗忘类别$C_{forget}$,全部测试集$D_{all\_train}$,全部测试集$D_{all\_test}$,初始网络模型$net$
-        \ENSURE  $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge\_i}Arr$
-        \STATE $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge\_i}Arr = []$
+        \REQUIRE 模型总层数$totalLayers$,遗忘类别$C_{forget}$,全部测试集$D_{all\_train}$,全部测试集$D_{all\_test}$,损失函数收敛限值$T_{threshold}$
+        \ENSURE  $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge}Arr$
+        \STATE $net \gets Initial\ Network$
+        \STATE $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge}Arr = []$
         \STATE $D_{retain\_train}, D_{forget\_train}, D_{retain\_test}, D_{forget\_test} \gets dispartDataset(D_{all\_train}, D_{all\_test}, C_{forget})$(算法\ref{algorithm:dispartDataset})
         \STATE $modelInit \gets net.saveModel()$
-        \STATE $modelNormal,\_ \gets trainNet(modelInit, trainset, P_{freeze}, T_{threshold})$(算法\ref{algorithm:trainNet})
+        \STATE $modelNormal,\_ \gets trainNet(modelInit, trainset, [], T_{threshold})$(算法\ref{algorithm:trainNet})
         \STATE $modelRetrain,\_ \gets trainNet(modelInit, D_{retain\_train}, [], T_{threshold})$(算法\ref{algorithm:trainNet})
         \FOR {$i \to totalLayers$}
-            \STATE $modelResetBeforeTrain\_i \gets mergeModel(modelNormal, modelInit, totalLayers, i)$(算法\ref{algorithm:mergeModel})
-            \STATE $modelResetAfterTrain\_i,T_{converge\_i} \gets trainNet(modelResetBeforeTrain\_i , D_{retain\_train},$\\$ [], T_{threshold})$(算法\ref{algorithm:trainNet})
-            \STATE $accNormalFreezeRetain\_i \gets getAcc(modelResetAfterTrain\_i, D_{retain\_test})$(算法\ref{algorithm:getAcc})
-            \STATE $accNormalFreezeForget\_i  \gets getAcc(modelResetAfterTrain\_i, D_{forget\_test})$(算法\ref{algorithm:getAcc})
-            \STATE $distanceNormalFreezeRetain\_i \gets getDistance(model, modelCmp, D_{retain\_test})$(算法\ref{algorithm:getDistance})
-            \STATE $distanceNormalFreezeForget\_i \gets getDistance(model, modelCmp, D_{forget\_test})$(算法\ref{algorithm:getDistance})
-            \STATE $accNormalFreezeRetainArr.push(accNormalFreezeRetain\_i)$
-            \STATE $accNormalFreezeForgetArr.push(accNormalFreezeForget\_i)$
-            \STATE $distanceNormalFreezeRetainArr.push(distanceNormalFreezeRetain\_i)$
-            \STATE $distanceNormalFreezeForgetArr.push(distanceNormalFreezeForget\_i)$
-            \STATE $T_{converge\_i}Arr.push(T_{converge\_i})$
+            \STATE $modelResetBeforeTrain \gets mergeModel(modelNormal, modelInit, totalLayers, i)$(算法\ref{algorithm:mergeModel})
+            \STATE $modelResetAfterTrain,T_{converge} \gets trainNet(modelResetBeforeTrain , D_{retain\_train},$\\$ [], T_{threshold})$(算法\ref{algorithm:trainNet})
+            \STATE $accNormalFreezeRetain \gets getAcc(modelResetAfterTrain, D_{retain\_test})$(算法\ref{algorithm:getAcc})
+            \STATE $accNormalFreezeForget  \gets getAcc(modelResetAfterTrain, D_{forget\_test})$(算法\ref{algorithm:getAcc})
+            \STATE $distanceNormalFreezeRetain \gets getDistance(modelResetAfterTrain, modelCmp, D_{retain\_test})$(算法\ref{algorithm:getDistance})
+            \STATE $distanceNormalFreezeForget \gets getDistance(modelResetAfterTrain, modelCmp, D_{forget\_test})$(算法\ref{algorithm:getDistance})
+            \STATE $accNormalFreezeRetainArr.push(accNormalFreezeRetain)$
+            \STATE $accNormalFreezeForgetArr.push(accNormalFreezeForget)$
+            \STATE $distanceNormalFreezeRetainArr.push(distanceNormalFreezeRetain)$
+            \STATE $distanceNormalFreezeForgetArr.push(distanceNormalFreezeForget)$
+            \STATE $T_{converge}Arr.push(T_{converge})$
         \ENDFOR
-        \RETURN $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge\_i}Arr$
+        \RETURN $accNormalFreezeRetainArr,accNormalFreezeForgetArr,$\\$distanceNormalFreezeRetainArr,distanceNormalFreezeForgetArr,T_{converge}Arr$
 	\end{algorithmic}  
 \end{algorithm}
 
@@ -215,39 +234,56 @@
 准备好了两个网络模型后，就使用保留训练集1到9分别训练两个模型，在完全初始化的网络模型上无需冻结参数，在后6层参数重置的网络模型上，未被重置参数的层数需要在训练过程中冻结参数。
 训练完成后，完全初始化的网络将得到使用9个训练数据集训练出来的模型。同样，在后6层参数重置的网络上也能得到9个使用保留训练集训练出来的模型。
 得到模型后，将模型进行各类指标的测试。到此实验结束。
-其具体的实现如算法\ref{algorithm:continuousForget}所示。
+
+其具体的实现如算法\ref{algorithm:continuousForget}所示。算法需要输入数据集类别集合，全部的测试集和训练集，损失函数收敛的限值。
+最终算法将输出完全重新训练与本文方法的各项指标在遗忘指定数量的类别时，各项指标对比结果。
+算法首先将要输出的各个变量进行初始化。然后针对进行逐步迭代，每次迭代均增加一个遗忘类别，直到保留类别为空为止。因此迭代的次数是所有类别的数量减去1，代表最后一次迭代保留类别的个数是1个。
+第3行到第6行用于生成遗忘类别的集合$C_{forget}$，可以看出每次迭代时遗忘增加一个。
+第7行至第8行用于生成初始化网络并保存网络的初始化参数，生成模型$modelInit$。
+第9行将数据集根据遗忘类别进行分割，最终生成保留训练集、保留测试集、遗忘训练集和遗忘测试集。
+第10行利用保留训练集和初始化模型训练网络，生成重新训练网络$retrainModel$，同时记录完全重新训练的收敛时间$T_{retrain}$。
+第11行使用正向冻结方法内循环算法（算法\ref{algorithm:normalFreezeResetInnerCycle}）实现数据的遗忘。该方法返回训练完成后生成模型$genModel$和收敛时间$T_{converge}$。
+第12行至第13行实现了对完全重新训练模型$retrainModel$在测试集上准确率的检测。
+第14行至第15行实现了使用本文遗忘方法生成的$genModel$模型在测试集上准确率的检测。
+第16行至第17行实现了在本文方法生成模型$genModel$与完全重新训练模型$retrainModel$之间进行激活距离的检测。
+第18行至第25行实现了上述各项指标每轮迭代的数据存储。
+至此算法结束。
+
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
 	\caption{遗忘可持续性验证实验算法 continuousForget}
 	\label{algorithm:continuousForget}
 	\begin{algorithmic}[1]
-        \REQUIRE 数据集所有类别$totalClasses$,网络收敛损失函数限值$T_{threshold}$
-        \ENSURE  $T_{converge\_forget\_i}Arr$,$accRetrainRetainArr$,$accRetrainForgetArr$,\\$accForget\_i\_KindsRetainArr$,$accForget\_i\_KindsForgetArr$,\\$distanceForget\_i\_KindsRetainArr$,$distanceForget\_i\_KindsForgetArr$
-        \STATE $T_{converge\_forget\_i}Arr$,$accRetrainRetainArr$,$accRetrainForgetArr$,\\$accForget\_i\_KindsRetainArr$,$accForget\_i\_KindsForgetArr$,\\$distanceForget\_i\_KindsRetainArr$,$distanceForget\_i\_KindsForgetArr$$ = []$
+        \REQUIRE 数据集所有类别$totalClasses$,全部测试集$D_{all\_train}$,全部测试集$D_{all\_test}$,损失函数收敛限值$T_{threshold}$,网络总层数$totalLayers$
+        \ENSURE  $T_{converge\_arr}$,$T_{retrain\_arr}$,$accRetrainRetainArr$,$accRetrainForgetArr$,\\$accRetainArr$,$accForgetArr$,$distanceRetainArr$,$distanceForgetArr$
+        \STATE $T_{converge\_arr}$,$T_{retrain\_arr}$,$accRetrainRetainArr$,$accRetrainForgetArr$,\\$accRetainArr$,$accForgetArr$,$distanceRetainArr$,$distanceForgetArr$$ = []$
         \FOR {$i \to totalClasses.length - 1$}
             \STATE $C_{forget} \gets []$
             \FOR {$j \to i$}
                 \STATE $C_{forget}.push(totalClasses[j])$
             \ENDFOR
+            \STATE $net \gets Initial\ Network$
+            \STATE $modelInit \gets net.saveModel()$
             \STATE $D_{train\_retain},D_{train\_forget},D_{test\_retain},D_{test\_forget} \gets dispartDataset(trainset, testset, C_{forget})$(算法\ref{algorithm:dispartDataset})
-            \STATE $retrainModel,T_{converge\_retrain} \gets trainNet(model\_init, trainRetain, [],$ \\ $ T_{threshold})$(算法\ref{algorithm:trainNet})
-            \STATE $genModel, T_{converge\_forget\_i} \gets normalFreezeResetInnerCycle($\\$total\_layers, i, C_{forget},D_{retain\_train},D_{retain\_test}, D_{forget\_test},retrainModel )$(算法\ref{algorithm:normalFreezeResetInnerCycle})
+            \STATE $retrainModel,T_{retrain} \gets trainNet(modelInit, trainRetain, [],T_{threshold})$(算法\ref{algorithm:trainNet})
+            \STATE $genModel, T_{converge} \gets normalFreezeResetInnerCycle($\\$totalLayers, i, C_{forget},D_{retain\_train},D_{retain\_test}, D_{forget\_test},retrainModel )$(算法\ref{algorithm:normalFreezeResetInnerCycle})
             \STATE $accRetrainRetain \gets getAcc(retrainModel, D_{retain\_test})$(算法\ref{algorithm:getAcc})
             \STATE $accRetrainForget  \gets getAcc(retrainModel, D_{forget\_test})$(算法\ref{algorithm:getAcc})
-            \STATE $accForget\_i\_KindsRetain \gets getAcc(genModel, D_{retain\_test})$(算法\ref{algorithm:getAcc})
-            \STATE $accForget\_i\_KindsForget  \gets getAcc(genModel, D_{forget\_test})$(算法\ref{algorithm:getAcc})
-            \STATE $distanceForget\_i\_KindsRetain \gets getDistance(genModel, modelRetrain,D_{retain\_test})$(算法\ref{algorithm:getDistance})
-            \STATE $distanceForget\_i\_KindsForget \gets getDistance(genModel, modelRetrain, D_{forget\_test})$(算法\ref{algorithm:getDistance})
-            \STATE $T_{converge\_forget\_i}Arr.push(T_{converge\_forget\_i})$
+            \STATE $accRetain \gets getAcc(genModel, D_{retain\_test})$(算法\ref{algorithm:getAcc})
+            \STATE $accForget  \gets getAcc(genModel, D_{forget\_test})$(算法\ref{algorithm:getAcc})
+            \STATE $distanceForgetRetain \gets getDistance(genModel, modelRetrain,D_{retain\_test})$(算法\ref{algorithm:getDistance})
+            \STATE $distanceForgetForget \gets getDistance(genModel, modelRetrain, D_{forget\_test})$(算法\ref{algorithm:getDistance})
+            \STATE $T_{converge\_arr}.push(T_{converge})$
+            \STATE $T_{retrain\_arr}.push(T_{retrain})$
             \STATE $accRetrainRetainArr.push(accRetrainRetain)$
             \STATE $accRetrainForgetArr.push(accRetrainForget)$
-            \STATE $accForget\_i\_KindsRetainArr.push(accForget\_i\_KindsRetain)$
-            \STATE $accForget\_i\_KindsForgetArr.push(accForget\_i\_KindsForget)$
-            \STATE $distanceForget\_i\_KindsRetainArr.push(distanceForget\_i\_KindsRetain)$
-            \STATE $distanceForget\_i\_KindsForgetArr.push(distanceForget\_i\_KindsForget)$
+            \STATE $accRetainArr.push(accRetain)$
+            \STATE $accForgetArr.push(accForget)$
+            \STATE $distanceRetainArr.push(distanceForgetRetain)$
+            \STATE $distanceForgetArr.push(distanceForgetForget)$
         \ENDFOR
-        \RETURN $T_{converge\_forget\_i}Arr$,$accRetrainRetainArr$,$accRetrainForgetArr$,\\$accForget\_i\_KindsRetainArr$,$accForget\_i\_KindsForgetArr$,\\$distanceForget\_i\_KindsRetainArr$,$distanceForget\_i\_KindsForgetArr$
+        \RETURN $T_{converge\_arr}$,$T_{retrain\_arr}$,$accRetrainRetainArr$,$accRetrainForgetArr$,\\$accRetainArr$,$accForgetArr$,$distanceRetainArr$,$distanceForgetArr$
 	\end{algorithmic}  
 \end{algorithm}
 % 用正常训练集训练神经网络得到模型1，在正常训练集训练之前保留网络参数得到模型0。

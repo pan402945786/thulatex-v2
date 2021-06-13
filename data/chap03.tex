@@ -298,9 +298,14 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
 	\end{algorithmic}  
 \end{algorithm}
 
-函数$normalFreezeResetInnerCycle$是正向冻结方法中的内循环。该算法需要输入模型总层数、需要重置参数的层数、遗忘类别的集合、保留训练集、保留测试集、遗忘测试集还有用于对比激活距离的模型。
+函数$normalFreezeResetInnerCycle$是正向冻结方法中的内循环。该算法需要输入模型总层数、重置参数的层数、遗忘类别的集合、保留训练集、保留测试集、遗忘测试集还有用于对比激活距离的模型。
 算法最终输出重置$i$层参数时，遗忘后的网络分别在保留测试集和遗忘测试集上的准确率（$accNormalFreezeRetain\_i$、$accNormalFreezeForget\_i$）和激活距离（$distanceNormalFreezeRetain\_i$、$,distanceNormalFreezeForget\_i$），还有网络训练的收敛时间$T_{converge\_i}$。
-首先要重置参数，生成混合后的模型。
+首先要重置参数，生成混合后的模型。在生成模型时，前部分模型传入的是正常训练的模型，后面部分模型传入的是初始化的模型。
+这么做的目的是将正常训练的模型的后面参数重置，重置的层数是传入的参数$i$。这里模型重置的方式与算法中模型\ref{algorithm:reverseReset}重置的方式是恰好相反的。
+生成混合模型$modelResetBeforeTrain\_i$后，要基于此模型使用保留训练集训练此网络至收敛，得到模型$modelResetAfterTrain\_i$和收敛时间$T_{converge\_i}$。
+第3行到第4行是根据算法\ref{algorithm:getAcc}使用保留测试集和遗忘测试集测试训练后模型的准确率。第5行到第6行是根据算法\ref{algorithm:getDistance}测试生成模型与完全重新训练模型的激活距离。
+内循环算法的最后将以上的测试信息返回。
+
 \begin{algorithm}
 	\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 	\renewcommand{\algorithmicensure}{\textbf{Output:}}
@@ -313,8 +318,8 @@ Kubilius Jonas等人\cite{2019arXiv190906161K}提到了卷积神经网络是最�
         \STATE $modelResetAfterTrain\_i,T_{converge\_i} \gets trainNet(modelResetBeforeTrain\_i , D_{retain\_train},$\\$ P_{freeze}, T_{threshold})$(算法\ref{algorithm:trainNet})
         \STATE $accNormalFreezeRetain\_i \gets getAcc(modelResetAfterTrain\_i, D_{retain\_test})$(算法\ref{algorithm:getAcc})
         \STATE $accNormalFreezeForget\_i  \gets getAcc(modelResetAfterTrain\_i, D_{forget\_test})$(算法\ref{algorithm:getAcc})
-        \STATE $distanceNormalFreezeRetain\_i \gets getDistance(model, modelCmp, D_{retain\_test})$(算法\ref{algorithm:getDistance})
-        \STATE $distanceNormalFreezeForget\_i \gets getDistance(model, modelCmp, D_{forget\_test})$(算法\ref{algorithm:getDistance})
+        \STATE $distanceNormalFreezeRetain\_i \gets getDistance(modelResetAfterTrain\_i, modelCmp, D_{retain\_test})$(算法\ref{algorithm:getDistance})
+        \STATE $distanceNormalFreezeForget\_i \gets getDistance(modelResetAfterTrain\_i, modelCmp, D_{forget\_test})$(算法\ref{algorithm:getDistance})
         \RETURN $accNormalFreezeRetain\_i,accNormalFreezeForget\_i,$\\$distanceNormalFreezeRetain\_i,distanceNormalFreezeForget\_i,T_{converge\_i}$
 	\end{algorithmic}  
 \end{algorithm}
